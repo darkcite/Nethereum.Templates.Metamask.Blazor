@@ -4,6 +4,10 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>anycpu</PlatformTarget>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="9.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.5" />
@@ -24,4 +28,9 @@
     <ProjectReference Include="..\Nethereum.Erc20.Blazor\Nethereum.Erc20.Blazor.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Properties\launchSettings.json">
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 </Project>

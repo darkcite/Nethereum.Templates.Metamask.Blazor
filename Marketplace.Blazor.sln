@@ -5,8 +5,6 @@ VisualStudioVersion = 17.3.32519.111
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nethereum.Erc20.Blazor", "Nethereum.Erc20.Blazor\Nethereum.Erc20.Blazor.csproj", "{684324A1-4DA3-4A69-80C5-2AB6A615E4C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleProject.Server", "ExampleProject.Server\ExampleProject.Server.csproj", "{3F07F72E-2405-46C0-9FF8-7D1CDFB5AEA4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleProject.Wasm", "ExampleProject.Wasm\ExampleProject.Wasm.csproj", "{BBEF0F1B-F19C-4011-A2A2-E84FB1733653}"
 EndProject
 Global
