@@ -9,9 +9,9 @@
       "ProjectName": {
         "type": "parameter",
         "datatype": "text",
-        "description": "The ProjectName to be used instead of 'ExampleProject'",
-        "fileRename": "ExampleProject",
-        "replaces": "ExampleProject",
+        "description": "The ProjectName to be used instead of 'Marketplace'",
+        "fileRename": "Marketplace",
+        "replaces": "Marketplace",
         "isRequired": true,
         "defaultValue": "MyProject"
       }
@@ -25,10 +25,10 @@
     ],
   "primaryOutputs": [
     {
-      "path": "ExampleProject.Server\\ExampleProject.Server.csproj"
+      "path": "Marketplace.Server\\Marketplace.Server.csproj"
     },
     {
-      "path": "ExampleProject.Wasm\\ExampleProject.Wasm.csproj"
+      "path": "Marketplace.Wasm\\Marketplace.Wasm.csproj"
     },
     {
       "path": "Nethereum.Erc20.Blazor\\Nethereum.Erc20.Blazor.csproj"

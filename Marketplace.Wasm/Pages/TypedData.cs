@@ -1,7 +1,7 @@
 ﻿using Nethereum.ABI.FunctionEncoding.Attributes;
 using System.Collections.Generic;
 
-namespace ExampleProject.Server.Pages
+namespace Marketplace.Wasm.Pages
 {
     [Struct("Mail")]
     public class Mail

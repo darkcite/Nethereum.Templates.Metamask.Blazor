@@ -14,7 +14,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Components.Authorization;
 using Nethereum.Blazor;
 
-namespace ExampleProject.Wasm
+namespace Marketplace.Wasm
 {
     public class Program
     {
