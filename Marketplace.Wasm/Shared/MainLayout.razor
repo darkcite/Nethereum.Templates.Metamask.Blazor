@@ -1,17 +1,26 @@
 ﻿@inherits LayoutComponentBase
 @inject AuthenticationStateProvider _siweAuthenticationStateProvider;
+
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-    <div class="main">
-        <div class="top-row px-4">
-            <Metamask/>
-           
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <NavMenu />
+            </div>
         </div>
-        <div class="content px-4">
-            @Body
+        @* <div class="row">
+            <div class="col-12">
+                <div class="top-row px-4">
+                    <Metamask />
+                </div>
+            </div>
+        </div> *@
+        <div class="row">
+            <div class="col-12">
+                <div class="content px-4">
+                    @Body
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
