@@ -1,36 +1,31 @@
-@page "/"
+@page "/my-nfts"
 @* @using Marketplace.Wasm.Contracts *@
 @using Nethereum.Web3
 @using System.Net.Http.Json
 @using Microsoft.AspNetCore.Components.Web
 @using Marketplace.Wasm.Models
 @* @inject IWeb3Provider Web3Provider *@
+@inject NavigationManager NavigationManager
 
 <div class="flex justify-center">
-    <div class="px-4" style="max-width: 1600px;">
+    <div class="p-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
             @if (NFTs != null && NFTs.Count > 0)
             {
                 @foreach (var nft in NFTs)
                 {
                     <div class="border shadow rounded-xl overflow-hidden">
-                        <img src="@nft.Image" />
-                        <div class="p-4">
-                            <p style="height: 64px;" class="text-2xl font-semibold">@nft.Name</p>
-                            <div style="height: 70px; overflow: hidden;">
-                                <p class="text-gray-400">@nft.Description</p>
-                            </div>
-                        </div>
+                        <img src="@nft.Image" class="rounded" />
                         <div class="p-4 bg-black">
-                            <p class="text-2xl font-bold text-white">@nft.Price ETH</p>
-                            <button class="mt-4 w-full bg-pink-500 text-white font-bold py-2 px-12 rounded" @onclick="() => BuyNFT(nft)">Buy</button>
+                            <p class="text-2xl font-bold text-white">Price - @nft.Price Eth</p>
+                            <button class="mt-4 w-full bg-pink-500 text-white font-bold py-2 px-12 rounded" @onclick="() => ListNFT(nft)">List</button>
                         </div>
                     </div>
                 }
             }
             else
             {
-                <h1 class="px-20 py-10 text-3xl">No items in marketplace</h1>
+                <h1 class="py-10 px-20 text-3xl">No NFTs owned</h1>
             }
         </div>
     </div>
@@ -49,8 +44,9 @@
         // Add your logic to load NFTs
     }
 
-    private async Task BuyNFT(NFT nft)
+    private void ListNFT(NFT nft)
     {
-        // Add your logic to buy NFT
+        // Implement your logic for listing NFT
+        NavigationManager.NavigateTo($"/resell-nft?id={nft.TokenId}&tokenURI={nft.TokenURI}");
     }
 }

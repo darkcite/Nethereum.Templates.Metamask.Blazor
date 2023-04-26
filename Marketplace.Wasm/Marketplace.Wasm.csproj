@@ -8,7 +8,9 @@
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>anycpu</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(RunConfiguration)' == 'Marketplace.Wasm' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'ExampleProject.Wasm' ">
+    <ExternalConsole>true</ExternalConsole>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="9.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.5" />
@@ -23,6 +25,7 @@
     <PackageReference Include="Nethereum.Web3" Version="4.14.0" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="7.0.2" />
+    <PackageReference Include="IpfsShipyard.Ipfs.Http.Client" Version="0.0.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,8 +33,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Pages\Index.razor" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Update="Properties\launchSettings.json">
       <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 </Project>

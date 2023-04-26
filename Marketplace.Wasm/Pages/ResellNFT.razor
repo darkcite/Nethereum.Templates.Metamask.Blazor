@@ -1,0 +1,51 @@
+@page "/resell-nft"
+@* @using Marketplace.Wasm.Contracts *@
+@using Nethereum.Web3
+@using System.Net.Http.Json
+@using Microsoft.AspNetCore.Components.Web
+@using Marketplace.Wasm.Models
+@* @inject IWeb3Provider Web3Provider *@
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+
+<div class="flex justify-center">
+    <div class="w-1/2 flex flex-col pb-12">
+        <input placeholder="Asset Price in Eth"
+               class="mt-2 border rounded p-4"
+               @bind="FormInput.Price" />
+        @if (!string.IsNullOrEmpty(FormInput.Image))
+        {
+            <img class="rounded mt-4" width="350" src="@FormInput.Image" />
+        }
+        <button @onclick="ListNFTForSale" class="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg">
+            List NFT
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Id { get; set; }
+    [Parameter] public string TokenURI { get; set; }
+
+    private NFTFormInput FormInput { get; set; } = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await FetchNFT();
+    }
+
+    private async Task FetchNFT()
+    {
+        if (string.IsNullOrEmpty(TokenURI)) return;
+        var meta = await Http.GetFromJsonAsync<NFTMetadata>(TokenURI);
+        FormInput.Image = meta.Image;
+    }
+
+    private async Task ListNFTForSale()
+    {
+        if (string.IsNullOrEmpty(FormInput.Price)) return;
+
+        // Add your logic to list NFT for sale
+        NavigationManager.NavigateTo("/");
+    }
+}

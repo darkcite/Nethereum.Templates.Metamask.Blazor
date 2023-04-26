@@ -1,0 +1,54 @@
+@page "/create-nft"
+@using Nethereum.Web3
+@using System.IO
+@using System.Text.Json
+@using Ipfs.Http
+
+<h3>Create NFT</h3>
+
+<div class="flex justify-center">
+    <div class="w-1/2 flex flex-col pb-12">
+        <input @bind="formInput.Name" placeholder="Asset Name" class="mt-8 border rounded p-4" />
+        <textarea @bind="formInput.Description" placeholder="Asset Description" class="mt-2 border rounded p-4"></textarea>
+        <input @bind="formInput.Price" placeholder="Asset Price in Eth" class="mt-2 border rounded p-4" />
+        <input type="file" @onchange="OnFileSelected" class="my-4" />
+        @if (!string.IsNullOrEmpty(fileUrl))
+        {
+            <img class="rounded mt-4" width="350" src="@fileUrl" />
+        }
+        <button @onclick="ListNFTForSale" class="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg">Create NFT</button>
+    </div>
+</div>
+
+@code {
+    private string fileUrl;
+    private CreateNFTFormInput formInput = new CreateNFTFormInput();
+    private IpfsClient ipfsClient = new IpfsClient();
+
+    private async Task OnFileSelected(ChangeEventArgs e)
+    {
+        var file = (FileInfo)e.Value;
+        try
+        {
+            var added = await ipfsClient.FileSystem.AddFileAsync(file.FullName);
+            fileUrl = $"https://ipfs.infura.io/ipfs/{added.Id}";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error uploading file: {ex.Message}");
+        }
+    }
+
+    private async Task ListNFTForSale()
+    {
+        // TODO: Add your Ethereum interaction code here
+        // For example, connect to MetaMask, instantiate the contract, and call the createToken function
+    }
+
+    public class CreateNFTFormInput
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Price { get; set; }
+    }
+}
