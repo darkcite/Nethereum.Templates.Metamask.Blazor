@@ -3,10 +3,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Web;
-
-using Microsoft.AspNetCore.Components.Forms;
-
 
 string filePath = "/Users/darkcite/Projects/ipfs-loader/ipfs-loader/123.png";
 string fileUrl;
@@ -46,6 +42,7 @@ using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAcces
 
         fileUrl = $"https://ipfs.infura.io/ipfs/{responseObject.Hash}";
 
+        //var contractHandler = await new ContractHandlerProvider().GetContractHandlerAsync();
     }
 }
 
@@ -61,8 +58,8 @@ static (string ApiKey, string ApiSecret) GetInfuraCredentials()
     // You can retrieve the API key and secret from a configuration file, environment variables, or other means.
     // In this example, I'm hardcoding them for simplicity, but you should use a more secure method.
 
-    var apiKey = " ";
-    var apiSecret = " ";
+    var apiKey = "";
+    var apiSecret = "";
 
     return (apiKey, apiSecret);
 }

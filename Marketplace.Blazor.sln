@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nethereum.Erc20.Blazor", "N
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.Wasm", "Marketplace.Wasm\Marketplace.Wasm.csproj", "{BBEF0F1B-F19C-4011-A2A2-E84FB1733653}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NftMarketplaceContract", "NftMarketplaceContract\NftMarketplaceContract.csproj", "{4B6C7EA6-9614-4600-BADF-6232677C8D64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NFTMarketplaceContract", "NftMarketplaceContract\NftMarketplaceContract.csproj", "{4B6C7EA6-9614-4600-BADF-6232677C8D64}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NFTCreator", "NFTCreator\NFTCreator.csproj", "{8C690492-237D-4811-9AEC-8AE5DD9448F3}"
 EndProject
