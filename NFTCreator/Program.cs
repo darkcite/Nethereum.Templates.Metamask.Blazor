@@ -3,6 +3,11 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using NFTMarketplaceContract;
+using System.Numerics;
+using Nethereum.Web3;
+using Newtonsoft.Json.Linq;
+using Nethereum.Contracts.Standards.ERC20.ContractDefinition;
 
 string filePath = "/Users/darkcite/Projects/ipfs-loader/ipfs-loader/123.png";
 string fileUrl;
@@ -42,7 +47,15 @@ using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAcces
 
         fileUrl = $"https://ipfs.infura.io/ipfs/{responseObject.Hash}";
 
-        //var contractHandler = await new ContractHandlerProvider().GetContractHandlerAsync();
+        var contractHandler = await new ContractHandlerProvider().GetContractHandlerAsync();
+
+        var getListingPriceFunctionReturn = await contractHandler.QueryAsync<GetListingPriceFunction, BigInteger>();
+
+        var createTokenFunction = new CreateTokenFunction();
+        createTokenFunction.TokenURI = fileUrl;
+        createTokenFunction.Price = new ContractHandlerProvider().ParcePrice(100);
+        var srk =  new ContractHandlerProvider().ParcePrice(100);
+        var createTokenFunctionTxnReceipt = await contractHandler.SendRequestAndWaitForReceiptAsync(createTokenFunction);
     }
 }
 
@@ -58,8 +71,8 @@ static (string ApiKey, string ApiSecret) GetInfuraCredentials()
     // You can retrieve the API key and secret from a configuration file, environment variables, or other means.
     // In this example, I'm hardcoding them for simplicity, but you should use a more secure method.
 
-    var apiKey = "";
-    var apiSecret = "";
+    var apiKey = "2OyEUF7r4netkvcqOQNPkAkyVHQ";
+    var apiSecret = "d98294208b5d4302c6fd510a4d4df4c1";
 
     return (apiKey, apiSecret);
 }
