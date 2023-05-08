@@ -1,9 +1,11 @@
 ﻿using System;
+using Nethereum.Contracts.Standards.ERC1155;
+
 namespace Marketplace.Wasm.Models
 {
-	public class NFTMetadata
+	public class NFTMetadata : NFT1155Metadata
 	{
-        public string Image { get; set; }
+        public int ProductId { get; set; }
     }
 }
 

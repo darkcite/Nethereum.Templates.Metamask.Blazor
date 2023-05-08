@@ -25,11 +25,16 @@
     <PackageReference Include="Nethereum.Web3" Version="4.14.0" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="7.0.2" />
-    <PackageReference Include="IpfsShipyard.Ipfs.Http.Client" Version="0.0.6" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Nethereum.Erc20.Blazor\Nethereum.Erc20.Blazor.csproj" />
+    <ProjectReference Include="..\ERC721ContractLibrary\ERC721ContractLibrary.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\Nethereum.XUnitEthereumClients\Nethereum.XUnitEthereumClients.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

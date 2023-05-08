@@ -525,7 +525,7 @@ namespace ERC721ContractLibrary.Contracts.MyERC1155
             return ContractHandler.QueryAsync<UriFunction, string>(uriFunction, blockParameter);
         }
 
-        public Event<TokenMintedEventDTO> GetTokenCreatedEvent()
+        public Event<TokenMintedEventDTO> GetTokenMintedEvent()
         {
             return ContractHandler.GetEvent<TokenMintedEventDTO>();
         }

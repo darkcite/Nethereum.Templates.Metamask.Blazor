@@ -4,6 +4,11 @@
 @using System.Net.Http.Json
 @using Microsoft.AspNetCore.Components.Web
 @using Marketplace.Wasm.Models
+@using ERC721ContractLibrary.Contracts.MyERC1155;
+@using ERC721ContractLibrary.Contracts.MyERC1155.ContractDefinition;
+@using Nethereum.Contracts.Standards.ERC1155;
+@using Nethereum.RPC.Eth.DTOs;
+@using Newtonsoft.Json;
 @* @inject IWeb3Provider Web3Provider *@
 
 <div>
@@ -33,13 +38,58 @@
 @code {
     private List<NFT> NFTs { get; set; } = new();
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadNFTs();
-    }
+        protected override async Task OnInitializedAsync()
+        {
+            await LoadNFTs();
+        }
 
-    private async Task LoadNFTs()
-    {
-        // Add your logic to load NFTs
+        private async Task LoadNFTs()
+        {
+            // Add your logic to load NFTs
+            var web3 = new Nethereum.Web3.Web3("http://localhost:8545");
+            //example of configuration as legacy (not eip1559) to work on L2s
+            web3.Eth.TransactionManager.UseLegacyAsDefault = true;
+            //creating a new service with the new contract address
+            var erc1155Service = new MyERC1155Service(web3, "0x08c45BFB2668BF9c287681f989AA06b329244dd7");
+            // Retrieve logs for the "TokenCreated" event
+            var filterInput = erc1155Service.GetTokenMintedEvent().CreateFilterInput(
+                new BlockParameter(), // block number  from deployment reciept???
+                BlockParameter.CreateLatest()
+            );
+
+            var eventLogs = await web3.Eth.Filters.GetLogs.SendRequestAsync(filterInput);
+
+            // Parse logs and extract the created token IDs
+            var decodedLog = erc1155Service.GetTokenMintedEvent().DecodeAllEventsForEvent(eventLogs);
+            foreach (var log in decodedLog)
+            {
+                Console.WriteLine($"Token ID: {log.Event.TokenId}");
+
+                /////////////
+                ///Get Image by tokenId
+                ///
+                string tokenUri = await erc1155Service.UriQueryAsync(log.Event.TokenId);
+
+                // Convert the IPFS URL to an HTTP gateway URL
+                string httpGatewayUrl = tokenUri.Replace("ipfs://", "https://ipfs.infura.io/ipfs/");
+
+                // Fetch the metadata JSON from the token URI
+                using HttpClient httpClient = new HttpClient();
+                HttpResponseMessage response = await httpClient.GetAsync(httpGatewayUrl);
+
+                // If the request is successful, extract metadata
+                if (response.IsSuccessStatusCode)
+                {
+                    string metadataJson = await response.Content.ReadAsStringAsync();
+                    NFTMetadata metadata = JsonConvert.DeserializeObject<NFTMetadata>(metadataJson);
+                    NFTs.Add(new NFT {
+                            Image = metadata.Image,
+                            Description = metadata.Description,
+                            Name = metadata.Name,
+                            TokenId = metadata.ProductId
+                    });
+                }
+
+            }
+        }
     }
-}

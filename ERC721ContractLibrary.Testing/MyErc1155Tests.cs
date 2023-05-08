@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,8 @@ using ERC721ContractLibrary.Contracts.MyERC1155.ContractDefinition;
 using ERC721ContractLibrary.Contracts.MyERC721;
 using ERC721ContractLibrary.Contracts.MyERC721.ContractDefinition;
 using Nethereum.Contracts.Standards.ERC1155;
+using Nethereum.Contracts.Standards.ERC20.TokenList;
+using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Util;
 using Nethereum.XUnitEthereumClients;
 using Newtonsoft.Json;
@@ -70,7 +73,7 @@ namespace ERC721ContractLibrary.Testing
             var metadataIpfs =
                 await nftIpfsService.AddNftsMetadataToIpfsAsync(metadataNFT, metadataNFT.ProductId + ".json");
 
-            var addressToRegisterOwnership = "0x33B0231ac46CC85FB895369055e2D8a8AEdCa294";
+            var addressToRegisterOwnership = "0xf36a84daBFB18F5c3EBF6Dd10D1115B3436c0eee";
 
             //Adding the product information
             var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(metadataNFT.ProductId,
@@ -101,9 +104,48 @@ namespace ERC721ContractLibrary.Testing
             var transfer = await erc1155Service.SafeTransferFromRequestAndWaitForReceiptAsync(addressToRegisterOwnership, addressToRegisterOwnership, (BigInteger)metadataNFT.ProductId, 2, new byte[]{});
             Assert.False(transfer.HasErrors());
 
+
+            // Retrieve logs for the "TokenCreated" event
+            var filterInput = erc1155Service.GetTokenMintedEvent().CreateFilterInput(
+                new BlockParameter(deploymentReceipt.BlockNumber),
+                BlockParameter.CreateLatest()
+            );
+
+            var eventLogs = await web3.Eth.Filters.GetLogs.SendRequestAsync(filterInput);
+
+            // Parse logs and extract the created token IDs
+            var decodedLog = erc1155Service.GetTokenMintedEvent().DecodeAllEventsForEvent(eventLogs);
+            foreach (var log in decodedLog)
+            { 
+                Console.WriteLine($"Token ID: {log.Event.TokenId}");
+
+                /////////////
+                ///Get Image by tokenId
+                ///
+                string tokenUri = await erc1155Service.UriQueryAsync(log.Event.TokenId);
+
+                // Convert the IPFS URL to an HTTP gateway URL
+                string httpGatewayUrl = tokenUri.Replace("ipfs://", "https://ipfs.infura.io/ipfs/");
+
+                // Fetch the metadata JSON from the token URI
+                using HttpClient httpClient = new HttpClient();
+                HttpResponseMessage response = await httpClient.GetAsync(httpGatewayUrl);
+
+                // If the request is successful, extract the image URL from the metadata
+                string image = null;
+                if (response.IsSuccessStatusCode)
+                {
+                    string metadataJson = await response.Content.ReadAsStringAsync();
+                    ProductNFTMetadata metadata = JsonConvert.DeserializeObject<ProductNFTMetadata>(metadataJson);
+                    image = metadata.Image;
+                }
+
+            }
+
+
+
+
         }
-
-
 
 
         public class ProductNFTMetadata : NFT1155Metadata
