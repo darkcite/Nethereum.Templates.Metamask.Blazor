@@ -13,6 +13,7 @@ using Nethereum.Metamask;
 using FluentValidation;
 using Microsoft.AspNetCore.Components.Authorization;
 using Nethereum.Blazor;
+using Marketplace.Wasm.Services;
 
 namespace Marketplace.Wasm
 {
@@ -36,8 +37,9 @@ namespace Marketplace.Wasm
                 selectedHostProvider.SetSelectedEthereumHostProvider(metamaskHostProvider);
                 return selectedHostProvider;
             });
-               
-            
+
+            builder.Services.AddSingleton<EthereumClientService>();
+
             builder.Services.AddSingleton<AuthenticationStateProvider, EthereumAuthenticationStateProvider>();
 
             builder.Services.AddValidatorsFromAssemblyContaining<Nethereum.Erc20.Blazor.Erc20Transfer>();
