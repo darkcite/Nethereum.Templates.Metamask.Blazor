@@ -40,6 +40,8 @@ namespace Marketplace.Wasm
 
             builder.Services.AddSingleton<EthereumClientService>();
 
+            builder.Services.AddScoped<NFTService>();
+
             builder.Services.AddSingleton<AuthenticationStateProvider, EthereumAuthenticationStateProvider>();
 
             builder.Services.AddValidatorsFromAssemblyContaining<Nethereum.Erc20.Blazor.Erc20Transfer>();
