@@ -6,28 +6,32 @@ using ERC721ContractLibrary.Contracts.MyERC1155;
 using Nethereum.RPC.Eth.DTOs;
 using Newtonsoft.Json;
 using System.Net.Http;
+using Microsoft.Extensions.Configuration;
 
 namespace Marketplace.Wasm.Services
 {
     public class NFTService
     {
         private EthereumClientService _ethereumClientService;
+        private readonly IConfiguration _configuration;
 
-        public NFTService(EthereumClientService ethereumClientService)
+        public NFTService(EthereumClientService ethereumClientService, IConfiguration configuration)
         {
             _ethereumClientService = ethereumClientService;
+            _configuration = configuration;
         }
 
         public async Task<List<NFT>> LoadNFTs()
         {
             List<NFT> NFTs = new List<NFT>();
-
+            
             // Add your logic to load NFTs
-            var web3 = new Nethereum.Web3.Web3("http://localhost:8545");
+            var web3 = _ethereumClientService.GetWeb3();
             //example of configuration as legacy (not eip1559) to work on L2s
             web3.Eth.TransactionManager.UseLegacyAsDefault = true;
             //creating a new service with the new contract address
-            var erc1155Service = new MyERC1155Service(web3, "0x9ad9d20142E49925160E806D6e2611A872124cbb");
+            var contractAddress = _configuration.GetValue<string>("Ethereum:ContractAddress");
+            var erc1155Service = new MyERC1155Service(web3, contractAddress);
             // Retrieve logs for the "TokenCreated" event
             var filterInput = erc1155Service.GetTokenMintedEvent().CreateFilterInput(
                 new BlockParameter(), // block number  from deployment reciept???
@@ -48,7 +52,8 @@ namespace Marketplace.Wasm.Services
                 string tokenUri = await erc1155Service.UriQueryAsync(log.Event.TokenId);
 
                 // Convert the IPFS URL to an HTTP gateway URL
-                string httpGatewayUrl = tokenUri.Replace("ipfs://", "https://we3ge.infura-ipfs.io/ipfs/");
+                var ipfsGatewayUrl = _configuration.GetValue<string>("IPFS:GatewayUrl");
+                string httpGatewayUrl = tokenUri.Replace("ipfs://", ipfsGatewayUrl);
 
                 // Fetch the metadata JSON from the token URI
                 using HttpClient httpClient = new HttpClient();
