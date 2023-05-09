@@ -50,7 +50,7 @@
             //example of configuration as legacy (not eip1559) to work on L2s
             web3.Eth.TransactionManager.UseLegacyAsDefault = true;
             //creating a new service with the new contract address
-            var erc1155Service = new MyERC1155Service(web3, "0x08c45BFB2668BF9c287681f989AA06b329244dd7");
+            var erc1155Service = new MyERC1155Service(web3, "0x9ad9d20142E49925160E806D6e2611A872124cbb");
             // Retrieve logs for the "TokenCreated" event
             var filterInput = erc1155Service.GetTokenMintedEvent().CreateFilterInput(
                 new BlockParameter(), // block number  from deployment reciept???
@@ -71,7 +71,7 @@
                 string tokenUri = await erc1155Service.UriQueryAsync(log.Event.TokenId);
 
                 // Convert the IPFS URL to an HTTP gateway URL
-                string httpGatewayUrl = tokenUri.Replace("ipfs://", "https://ipfs.infura.io/ipfs/");
+                string httpGatewayUrl = tokenUri.Replace("ipfs://", "https://we3ge.infura-ipfs.io/ipfs/");
 
                 // Fetch the metadata JSON from the token URI
                 using HttpClient httpClient = new HttpClient();
