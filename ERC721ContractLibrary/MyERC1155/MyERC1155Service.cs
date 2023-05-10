@@ -529,5 +529,30 @@ namespace ERC721ContractLibrary.Contracts.MyERC1155
         {
             return ContractHandler.GetEvent<TokenMintedEventDTO>();
         }
+
+        public async Task<TokenDataOutputDTO> GetTokenDataAsync(BigInteger tokenId)
+        {
+            var tokenDataFunctionMessage = new TokenDataFunction()
+            {
+                ReturnValue1 = tokenId,
+            };
+
+            return await ContractHandler.QueryDeserializingToObjectAsync<TokenDataFunction, TokenDataOutputDTO>(tokenDataFunctionMessage);
+        }
+
+        public async Task<TransactionReceipt> SetTokenForSaleStatusAsync(BigInteger tokenId, BigInteger newPrice, bool newStatus, string newContactInfo, CancellationTokenSource cancellationToken = null)
+        {
+            var updateTokenForSaleFunction = new UpdateTokenForSaleFunction
+            {
+                Id = tokenId,
+                NewPrice = newPrice,
+                NewStatus = newStatus,
+                NewContactInfo = newContactInfo
+            };
+
+            return await ContractHandler.SendRequestAndWaitForReceiptAsync(updateTokenForSaleFunction, cancellationToken);
+        }
+
+
     }
 }
