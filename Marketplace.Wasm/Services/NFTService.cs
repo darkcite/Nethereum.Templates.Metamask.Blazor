@@ -7,6 +7,7 @@ using Nethereum.RPC.Eth.DTOs;
 using Newtonsoft.Json;
 using System.Net.Http;
 using Microsoft.Extensions.Configuration;
+using ERC721ContractLibrary.Contracts.MyERC1155.ContractDefinition;
 
 namespace Marketplace.Wasm.Services
 {
@@ -21,10 +22,62 @@ namespace Marketplace.Wasm.Services
             _configuration = configuration;
         }
 
-        public async Task<List<NFT>> LoadNFTs()
+        private async Task<List<NFT>> LoadNFTs(Func<TokenDataOutputDTO, bool> filter)
         {
             List<NFT> NFTs = new List<NFT>();
-            
+
+            var web3 = _ethereumClientService.GetWeb3();
+            web3.Eth.TransactionManager.UseLegacyAsDefault = true;
+
+            var contractAddress = _configuration.GetValue<string>("Ethereum:ContractAddress");
+            var erc1155Service = new MyERC1155Service(web3, contractAddress);
+
+            var filterInput = erc1155Service.GetTokenMintedEvent().CreateFilterInput(new BlockParameter(), BlockParameter.CreateLatest());
+            var eventLogs = await web3.Eth.Filters.GetLogs.SendRequestAsync(filterInput);
+
+            var decodedLog = erc1155Service.GetTokenMintedEvent().DecodeAllEventsForEvent(eventLogs);
+            foreach (var log in decodedLog)
+            {
+                string tokenUri = await erc1155Service.UriQueryAsync(log.Event.TokenId);
+                var ipfsGatewayUrl = _configuration.GetValue<string>("IPFS:GatewayUrl");
+                string httpGatewayUrl = tokenUri.Replace("ipfs://", ipfsGatewayUrl);
+
+                using HttpClient httpClient = new HttpClient();
+                HttpResponseMessage response = await httpClient.GetAsync(httpGatewayUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string metadataJson = await response.Content.ReadAsStringAsync();
+                    NFTMetadata metadata = JsonConvert.DeserializeObject<NFTMetadata>(metadataJson);
+
+                    var tokenData = await erc1155Service.GetTokenDataAsync(log.Event.TokenId);
+
+                    if (filter(tokenData))
+                    {
+                        NFTs.Add(new NFT
+                        {
+                            Image = metadata.Image,
+                            Description = metadata.Description,
+                            Name = metadata.Name,
+                            TokenId = metadata.ProductId,
+                            Price = tokenData.Price.ToString(),
+                            ForSale = tokenData.ForSale
+                        });
+                    }
+                }
+            }
+
+            return NFTs;
+        }
+
+        public Task<List<NFT>> LoadAllNFTs() => LoadNFTs(_ => true);
+
+        public Task<List<NFT>> LoadNFTsForSale() => LoadNFTs(tokenData => tokenData.ForSale);
+
+        public async Task<List<NFT>> LoadNFTsOld()
+        {
+            List<NFT> NFTs = new List<NFT>();
+
             // Add your logic to load NFTs
             var web3 = _ethereumClientService.GetWeb3();
             //example of configuration as legacy (not eip1559) to work on L2s
@@ -79,6 +132,8 @@ namespace Marketplace.Wasm.Services
             return NFTs;
         }
     }
+
+
 
 }
 

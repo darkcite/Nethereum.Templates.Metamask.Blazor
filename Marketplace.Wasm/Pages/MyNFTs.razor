@@ -6,10 +6,12 @@
 @using Marketplace.Wasm.Models
 @* @inject IWeb3Provider Web3Provider *@
 @inject NavigationManager NavigationManager
+@inject Services.MetaMaskService MetaMaskService
 
 <div class="flex justify-center">
     <div class="p-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+            <p>@Account</p>
             @if (NFTs != null && NFTs.Count > 0)
             {
                 @foreach (var nft in NFTs)
@@ -32,10 +34,14 @@
 </div>
 
 @code {
+    private string Account { get; set; }
+
     private List<NFT> NFTs { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
+        Account = await MetaMaskService.GetUserAccountAsync();
+
         await LoadNFTs();
     }
 

@@ -11,6 +11,8 @@ namespace Marketplace.Wasm.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string TokenURI { get; set; }
+        public bool ForSale { get; set; }
+
     }
 
 }
