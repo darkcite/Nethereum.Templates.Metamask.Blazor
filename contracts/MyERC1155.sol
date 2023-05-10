@@ -12,6 +12,16 @@ contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply
     
     mapping (uint256 => string) private _tokenURIs;
 
+    struct TokenData {
+        uint256 price;
+        bool forSale;
+        string contactInfo;
+    }
+
+    mapping(uint256 => TokenData) public tokenData;
+
+    event TokenMinted(address indexed account, uint256 indexed tokenId, uint256 amount);
+
     constructor() ERC1155("") {}
 
     function setURI(string memory newuri) public onlyOwner {
@@ -35,11 +45,13 @@ contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply
         _unpause();
     }
 
-    function mint(address account, uint256 id, uint256 amount, bytes memory data)
+    function mint(address account, uint256 id, uint256 amount, string memory contactInfo)
         public
         onlyOwner
     {
-        _mint(account, id, amount, data);
+        _mint(account, id, amount, "");
+        tokenData[id] = TokenData(0, false, contactInfo);
+        emit TokenMinted(account, id, amount);
     }
 
     function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
@@ -47,6 +59,15 @@ contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply
         onlyOwner
     {
         _mintBatch(to, ids, amounts, data);
+    }
+
+    function updateTokenForSale(uint256 id, uint256 newPrice, bool newStatus, string memory newContactInfo) public {
+        require(_exists(id), "ERC1155: operator query for nonexistent token");
+        require(msg.sender == owner() || balanceOf(msg.sender, id) > 0, "Caller is not owner nor the token owner");
+
+        tokenData[id].price = newPrice;
+        tokenData[id].forSale = newStatus;
+        tokenData[id].contactInfo = newContactInfo;
     }
 
     function _beforeTokenTransfer(address operator, address from, address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
