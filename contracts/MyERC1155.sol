@@ -62,13 +62,14 @@ contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply
     }
 
     function updateTokenForSale(uint256 id, uint256 newPrice, bool newStatus, string memory newContactInfo) public {
-        require(_exists(id), "ERC1155: operator query for nonexistent token");
+        require(balanceOf(msg.sender, id) > 0, "ERC1155: operator query for nonexistent token");
         require(msg.sender == owner() || balanceOf(msg.sender, id) > 0, "Caller is not owner nor the token owner");
 
         tokenData[id].price = newPrice;
         tokenData[id].forSale = newStatus;
         tokenData[id].contactInfo = newContactInfo;
     }
+
 
     function _beforeTokenTransfer(address operator, address from, address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
         internal
