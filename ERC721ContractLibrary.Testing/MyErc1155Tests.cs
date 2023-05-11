@@ -27,7 +27,8 @@ namespace ERC721ContractLibrary.Testing
     {
         private readonly EthereumClientIntegrationFixture _ethereumClientIntegrationFixture;
 
-        private readonly string _contractId = "0xbE89078358a684290a8129B579d96dA127f24AB1";
+        private readonly string _contractId = "0x720C0F65B2c8Ad2Ce4C143257EDFf0fd31c36850";
+
 
         public MyErc1155Test(EthereumClientIntegrationFixture ethereumClientIntegrationFixture)
         {
@@ -54,30 +55,26 @@ namespace ERC721ContractLibrary.Testing
             var erc1155Service = new MyERC1155Service(web3, deploymentReceipt.ContractAddress);
 
             //uploading to ipfs our documents
-            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: "2OyEUF7r4netkvcqOQNPkAkyVHQ", password: "");
-            var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/hard-drive-by-vincent-botta-from-unsplash.jpg");
+            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: infU, password: infP);
+            var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/1.gif");
 
 
             //adding all our document ipfs links to the metadata and the description
             var metadataNFT = new ProductNFTMetadata()
             {
-                ProductId = 12131,
-                Name = "4TB Black Performance Desktop Hard Drive",
+                ProductId = 111,
+                Name = "Gem 1",
                 Image = "ipfs://" + imageIpfs.Hash, //The image is what is displayed in market places like opean sea
-                Description = @"Capacity: 4TB
-                                Interface: SATA 6Gb / s
-                                Form Factor: 3.5 Inch
-                                Easy Backup and Upgrade
-                                5 Year Warranty (Photo by: Vincent Botta https://unsplash.com/@0asa)",
-                ExternalUrl = "https://github.com/Nethereum/ERC721ContractLibrary.Template",
+                Description = @"6 CT",
+                ExternalUrl = "",
                 Decimals = 0
             };
-            var stockHardDrive = 100;
+            var stockHardDrive = 1;
             //Adding the metadata to ipfs
             var metadataIpfs =
                 await nftIpfsService.AddNftsMetadataToIpfsAsync(metadataNFT, metadataNFT.ProductId + ".json");
 
-            var addressToRegisterOwnership = "0xcc065Ab4dB280a3fFA94057121Ed1807D468c30d";
+            var addressToRegisterOwnership = "0x5D955Bf30dFdfeA862eA862766FBb64B9d2c80F6";
 
             //Adding the product information
             var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(metadataNFT.ProductId,
@@ -163,22 +160,18 @@ namespace ERC721ContractLibrary.Testing
             var erc1155Service = new MyERC1155Service(web3, _contractId);
 
             //uploading to ipfs our documents
-            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: "2OyEUF7r4netkvcqOQNPkAkyVHQ", password: "d98294208b5d4302c6fd510a4d4df4c1");
-            var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/hard-drive-by-vincent-botta-from-unsplash.jpg");
+            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: infU, password: infP);
+            var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/1.gif");
 
 
             //adding all our document ipfs links to the metadata and the description
             var metadataNFT = new ProductNFTMetadata()
             {
-                ProductId = 12131,
-                Name = "4TB Black Performance Desktop Hard Drive",
+                ProductId = 222,
+                Name = "Gem 2",
                 Image = "ipfs://" + imageIpfs.Hash, //The image is what is displayed in market places like opean sea
-                Description = @"Capacity: 4TB
-                                Interface: SATA 6Gb / s
-                                Form Factor: 3.5 Inch
-                                Easy Backup and Upgrade
-                                5 Year Warranty (Photo by: Vincent Botta https://unsplash.com/@0asa)",
-                ExternalUrl = "https://github.com/Nethereum/ERC721ContractLibrary.Template",
+                Description = @"7 CT",
+                ExternalUrl = "",
                 Decimals = 0
             };
             var stockHardDrive = 100;
@@ -186,7 +179,7 @@ namespace ERC721ContractLibrary.Testing
             var metadataIpfs =
                 await nftIpfsService.AddNftsMetadataToIpfsAsync(metadataNFT, metadataNFT.ProductId + ".json");
 
-            var addressToRegisterOwnership = "0xcc065Ab4dB280a3fFA94057121Ed1807D468c30d";
+            var addressToRegisterOwnership = "0x5D955Bf30dFdfeA862eA862766FBb64B9d2c80F6";
 
             //Adding the product information
             var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(metadataNFT.ProductId,
@@ -205,17 +198,17 @@ namespace ERC721ContractLibrary.Testing
             var erc1155Service = new MyERC1155Service(web3, _contractId);
 
             //uploading to ipfs our documents
-            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: "2OyEUF7r4netkvcqOQNPkAkyVHQ", password: "d98294208b5d4302c6fd510a4d4df4c1");
-            var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/3.jpg");
+            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: infU, password: infP);
+            var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/2.gif");
 
 
             //adding all our document ipfs links to the metadata and the description
             var metadataNFT = new ProductNFTMetadata()
             {
-                ProductId = 666,
-                Name = "wakawaka",
+                ProductId = 333,
+                Name = "Gem 3",
                 Image = "ipfs://" + imageIpfs.Hash, //The image is what is displayed in market places like opean sea
-                Description = @"sraka",
+                Description = @"8 CT",
                 ExternalUrl = "",
                 Decimals = 0
             };
@@ -224,7 +217,7 @@ namespace ERC721ContractLibrary.Testing
             var metadataIpfs =
                 await nftIpfsService.AddNftsMetadataToIpfsAsync(metadataNFT, metadataNFT.ProductId + ".json");
 
-            var addressToRegisterOwnership = "0xcc065Ab4dB280a3fFA94057121Ed1807D468c30d";
+            var addressToRegisterOwnership = "0x5D955Bf30dFdfeA862eA862766FBb64B9d2c80F6";
 
             //Adding the product information
             var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(metadataNFT.ProductId,
@@ -233,6 +226,46 @@ namespace ERC721ContractLibrary.Testing
             var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, metadataNFT.ProductId, stockHardDrive, new byte[] { });
 
             var setForSaleResult = erc1155Service.SetTokenForSaleStatusAsync(metadataNFT.ProductId, 10000000, true, "sraka");
+        }
+
+        [Fact]
+        public async void CreateNftAndNotSetForSale()
+        {
+            var web3 = _ethereumClientIntegrationFixture.GetWeb3(); //if you want to use your local node (ie geth, uncomment this, see appsettings.test.json for further info)
+            //example of configuration as legacy (not eip1559) to work on L2s
+            web3.Eth.TransactionManager.UseLegacyAsDefault = true;
+            //creating a new service with the new contract address
+            var erc1155Service = new MyERC1155Service(web3, _contractId);
+
+            //uploading to ipfs our documents
+            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: infU, password: infP);
+            var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/3.gif");
+
+
+            //adding all our document ipfs links to the metadata and the description
+            var metadataNFT = new ProductNFTMetadata()
+            {
+                ProductId = 444,
+                Name = "Gem 4",
+                Image = "ipfs://" + imageIpfs.Hash, //The image is what is displayed in market places like opean sea
+                Description = @"9 CT",
+                ExternalUrl = "",
+                Decimals = 0
+            };
+            var stockHardDrive = 30;
+            //Adding the metadata to ipfs
+            var metadataIpfs =
+                await nftIpfsService.AddNftsMetadataToIpfsAsync(metadataNFT, metadataNFT.ProductId + ".json");
+
+            var addressToRegisterOwnership = "0x5D955Bf30dFdfeA862eA862766FBb64B9d2c80F6";
+
+            //Adding the product information
+            var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(metadataNFT.ProductId,
+                 "ipfs://" + metadataIpfs.Hash);
+
+            var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, metadataNFT.ProductId, stockHardDrive, new byte[] { });
+
+            var setForSaleResult = erc1155Service.SetTokenForSaleStatusAsync(metadataNFT.ProductId, 20000000, false, "sraka");
         }
 
         [Fact]
