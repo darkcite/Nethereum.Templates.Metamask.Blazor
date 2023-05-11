@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
+using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
-using Nethereum.Web3.Accounts;
 using System;
+using System.Threading.Tasks;
 
 namespace Marketplace.Wasm.Services
 {
@@ -22,41 +23,57 @@ namespace Marketplace.Wasm.Services
         private Web3 BuildWeb3()
         {
             var url = GetUrl();
-            var account = GetAccount();
 
-            if (account != null)
+            if (url != null)
             {
-                return new Web3(account, url);
+                return new Web3(url);
             }
             else
             {
-                return new Web3(url);
+                throw new Exception("Ethereum client URL not configured");
             }
         }
 
         private string GetUrl()
         {
             var url = _configuration["Ethereum:ClientUrl"];
-            if (string.IsNullOrEmpty(url))
-            {
-                throw new Exception("Ethereum client URL not configured");
-            }
             return url;
-        }
-
-        private Account GetAccount()
-        {
-            var privateKey = _configuration["Ethereum:PrivateKey"];
-            if (string.IsNullOrEmpty(privateKey))
-            {
-                return null;
-            }
-            return new Account(privateKey);
         }
 
         public Web3 GetWeb3()
         {
             return _web3;
         }
+
+        // Method to sign a message:
+        public async Task<string> SignMessage(string message)
+        {
+            return await _jsRuntime.InvokeAsync<string>("ethereum.request", new
+            {
+                method = "eth_sign",
+                @params = new object[]
+                {
+            await _jsRuntime.InvokeAsync<string>("ethereum.selectedAddress"),
+            message
+                }
+            });
+        }
+
+        // Method to send a transaction:
+        public async Task<string> SendTransaction(TransactionInput transaction)
+        {
+            return await _jsRuntime.InvokeAsync<string>("ethereum.request", new
+            {
+                method = "eth_sendTransaction",
+                @params = new object[] { transaction }
+            });
+        }
+
+        // Method to connect MetaMask:
+        public async Task<string> ConnectMetamask()
+        {
+            return await _jsRuntime.InvokeAsync<string>("ethereum.request", new { method = "eth_requestAccounts" });
+        }
+
     }
 }

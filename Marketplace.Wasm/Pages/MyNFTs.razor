@@ -135,7 +135,7 @@
 
     private async Task UpdateNFT(BigInteger tokenId)
     {
-        await NftService.UpdateNFTDetailsAsync(SelectedAccount, tokenId, UpdateNftModel.Price, UpdateNftModel.ForSale, UpdateNftModel.ContactInfo);
+        await NftService.UpdateNFTDetailsAsync(tokenId, UpdateNftModel.Price, UpdateNftModel.ForSale, UpdateNftModel.ContactInfo);
         await LoadMyNfts(); // to refresh the data
         CloseModal(tokenId);
     }

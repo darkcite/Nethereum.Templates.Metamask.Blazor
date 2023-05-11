@@ -18,14 +18,16 @@ namespace Marketplace.Wasm.Services
     {
         private EthereumClientService _ethereumClientService;
         private readonly IConfiguration _configuration;
+        private MetaMaskService _metaMaskService;
 
         private string _contractAddress;
         private MyERC1155Service _erc1155Service;
 
-        public NFTService(EthereumClientService ethereumClientService, IConfiguration configuration)
+        public NFTService(EthereumClientService ethereumClientService, IConfiguration configuration, MetaMaskService metaMaskService)
         {
             _ethereumClientService = ethereumClientService;
             _configuration = configuration;
+            _metaMaskService = metaMaskService;
 
             var web3 = _ethereumClientService.GetWeb3();
             web3.Eth.TransactionManager.UseLegacyAsDefault = true;
@@ -98,9 +100,31 @@ namespace Marketplace.Wasm.Services
 
         public Task<List<NFT>> LoadNFTsOwnedByAccount(string account) => LoadNFTs(_ => true, account);
 
-        public async Task UpdateNFTDetailsAsync(string accountId, BigInteger tokenId, BigInteger newPrice, bool newStatus, string newContactInfo)
+        public async Task UpdateNFTDetailsAsync(BigInteger tokenId, BigInteger newPrice, bool newStatus, string newContactInfo)
         {
-            var receipt = await _erc1155Service.SetTokenForSaleStatusAsync(tokenId, newPrice, newStatus, newContactInfo);
+            // Prepare function call
+            var functionMessage = new UpdateTokenForSaleFunction
+            {
+                Id = tokenId,
+                NewPrice = newPrice,
+                NewStatus = newStatus,
+                NewContactInfo = newContactInfo
+            };
+
+            // Get function from service
+            var function = _erc1155Service.ContractHandler.GetFunction<UpdateTokenForSaleFunction>();
+
+            // Encode the function call
+            var data = function.GetData(functionMessage);
+
+            // Send the transaction through Metamask
+            var txHash = await _metaMaskService.SendTransaction(_contractAddress, data);
+
+            // TODO: Wait for the transaction to be mined and get the receipt, and check the receipt status
         }
+
+
+
+
     }
 }

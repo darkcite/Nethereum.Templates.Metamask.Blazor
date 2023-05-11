@@ -19,5 +19,10 @@ namespace Marketplace.Wasm.Services
 
         }
 
+        public ValueTask<string> SendTransaction(string to, string data)
+        {
+            // Call JavaScript function to interact with Metamask
+            return _jsRuntime.InvokeAsync<string>("sendTransaction", to, data);
+        }
     }
 }

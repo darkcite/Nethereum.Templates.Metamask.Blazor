@@ -46,6 +46,20 @@
                 myModal.hide();
             }
         }</script>
+
+    <script>window.sendTransaction = async (to, data) => {
+            const ethereum = window.ethereum;
+            const accounts = await ethereum.request({ method: 'eth_accounts' });
+            const params = [
+                {
+                    from: accounts[0],
+                    to: to,
+                    data: data
+                }
+            ];
+            const txHash = await ethereum.request({ method: 'eth_sendTransaction', params: params });
+            return txHash;
+        };</script>
 </body>
 
 </html>
