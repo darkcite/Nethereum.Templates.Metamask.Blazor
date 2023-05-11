@@ -1,27 +1,23 @@
-﻿<nav class="navbar navbar-expand-lg navbar-dark bg-dark align-items-center">
-    <a class="navbar-brand" href="">The Marketplace</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+﻿<nav class="navbar navbar-expand-lg align-items-center custom-nav">
+    <a class="navbar-brand" href="">
+        <img src="/logo.png" alt="Logo" class="logo" height="50">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                    <span class="oi oi-home" aria-hidden="true"></span> NFTs Available Now
-                </NavLink>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item me-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">NFTs Available Now</NavLink>
+            </li>
+            <li class="nav-item me-3">
+                <NavLink class="nav-link" href="all-nfts" Match="NavLinkMatch.All">All NFTs</NavLink>
             </li>
             <li class="nav-item">
-                <NavLink class="nav-link" href="all-nfts" Match="NavLinkMatch.All">
-                    <span class="oi oi-dashboard" aria-hidden="true"></span> All NFTs
-                </NavLink>
-            </li>
-            <li class="nav-item">
-                <NavLink class="nav-link" href="my-nfts" Match="NavLinkMatch.All">
-                    <span class="oi oi-folder" aria-hidden="true"></span> My NFTs
-                </NavLink>
+                <NavLink class="nav-link" href="my-nfts" Match="NavLinkMatch.All">My NFTs</NavLink>
             </li>
         </ul>
-        <div class="ml-auto">
+        <div class="d-flex">
             <Metamask />
         </div>
     </div>

@@ -8,77 +8,68 @@
 
 <AuthorizeView Roles="EthereumConnected">
     <Authorized Context="authContext">
-        <div class="card m-1">
-            <div class="card-body">
-                <div class="row">
-                    <label class="col-sm-3 col-form-label-lg">Selected Account:</label>
-                    <div class="col-sm-6">
-                        @SelectedAccount
-                        <small id="selectedAccountHelp" class="form-text text-muted">The selected account is bound to the host (ie Metamask) on change</small>
-                    </div>
+        <div class="container py-4">
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label-lg">Selected Account:</label>
+                <div class="col-sm-6">
+                    @SelectedAccount
+                    <small id="selectedAccountHelp" class="form-text text-muted">The selected account is bound to the host (ie Metamask) on change</small>
                 </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <h2>My NFTs:</h2>
-                        @if (myNfts == null)
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <h2>My NFTs:</h2>
+                    @if (myNfts == null)
+                    {
+                        <p>Loading...</p>
+                    }
+                    else
+                    {
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                            @foreach (var nft in myNfts)
                             {
-                            <p>Loading...</p>
-                            }
-                            else
-                            {
-                                foreach (var nft in myNfts)
-                                {
-                                <div>
-                                    <h2>@nft.Name</h2>
-                                    <img src="@ConvertIpfsToHttp(nft.Image)" alt="@nft.Name" width="100" />
-                                    <button class="btn btn-primary" @onclick="() => OpenModal(nft.TokenId)">Update NFT</button>
-                                    @*<button type="button" class="btn btn-primary" @onclick="() => OpenModal()">Open Modal</button>*@
-                                </div>
-                                <!-- The Modal -->
-                                @*<div class="modal" tabindex="-1" id="myModal">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Modal Title</h5>
-                                                <button type="button" class="btn-close" @onclick="() => CloseModal()"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <p>Modal body text...</p>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" @onclick="() => CloseModal()">Close</button>
-                                            </div>
+                                <div class="col">
+                                    <div class="card h-100">
+                                        <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top" alt="@nft.Name" />
+                                        <div class="card-body">
+                                            <h5 class="card-title">@nft.Name</h5>
+                                        </div>
+                                        <div class="card-footer">
+                                            <button class="btn btn-primary" @onclick="() => OpenModal(nft.TokenId)">Update NFT</button>
                                         </div>
                                     </div>
-                                </div>*@
-                                <!-- The Modal -->
-                                <div class="modal" tabindex="-1" id="@($"modal{nft.TokenId.ToString()}")">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title">Update NFT</h5>
-                                                <button type="button" class="btn-close" @onclick="() => CloseModal(nft.TokenId)"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <EditForm Model="@UpdateNftModel" OnValidSubmit="() => UpdateNFT(nft.TokenId)">
+                                    <!-- The Modal -->
+                                    <div class="modal" tabindex="-1" id="@($"modal{nft.TokenId.ToString()}")">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Update NFT</h5>
+                                                    <button type="button" class="btn-close" @onclick="() => CloseModal(nft.TokenId)"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <EditForm Model="@UpdateNftModel" OnValidSubmit="() => UpdateNFT(nft.TokenId)">
+                                                        <DataAnnotationsValidator />
+                                                        <ValidationSummary />
 
-                                                    <DataAnnotationsValidator />
-                                                    <ValidationSummary />
-                                                    <BigIntegerInput @bind-Value="@UpdateNftModel.Price" id="price" placeholder="New price" />
-                                                    <InputCheckbox id="forSale" @bind-Value="@UpdateNftModel.ForSale" />For sale
-                                                    <InputText id="contactInfo" @bind-Value="@UpdateNftModel.ContactInfo" placeholder="New contact info" />
-                                                    <button type="submit" class="btn btn-primary">Update</button>
-                                                </EditForm>
-
-
-
+                                                        <div class="form-group mb-3">
+                                                            <BigIntegerInput @bind-Value="@UpdateNftModel.Price" id="price" placeholder="New price" class="form-control" />
+                                                        </div>
+                                                        <div class="form-group mb-3">
+                                                            <InputCheckbox id="forSale" @bind-Value="@UpdateNftModel.ForSale" /> For sale
+                                                        </div>
+                                                        <div class="form-group mb-3">
+                                                            <InputText id="contactInfo" @bind-Value="@UpdateNftModel.ContactInfo" placeholder="New contact info" class="form-control" />
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">Update</button>
+                                                    </EditForm>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                }
                             }
-                    </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -89,6 +80,7 @@
         </div>
     </NotAuthorized>
 </AuthorizeView>
+
 
 @code {
     bool EthereumAvailable { get; set; }

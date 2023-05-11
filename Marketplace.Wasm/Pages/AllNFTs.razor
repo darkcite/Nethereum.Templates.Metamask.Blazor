@@ -1,5 +1,4 @@
 @page "/all-nfts"
-@* @using Marketplace.Wasm.Contracts *@
 @using Nethereum.Web3
 @using System.Net.Http.Json
 @using Microsoft.AspNetCore.Components.Web
@@ -10,30 +9,33 @@
 @using Nethereum.RPC.Eth.DTOs;
 @using Newtonsoft.Json;
 @inject Services.NFTService NFTService
-@* @inject IWeb3Provider Web3Provider *@
 
-<div>
-    <div class="p-4">
-        <h2 class="text-2xl py-2">Items Listed</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-            @if (NFTs != null && NFTs.Count > 0)
+<div class="container py-4">
+    <h2 class="py-2">Items Listed</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        @if (NFTs != null && NFTs.Count > 0)
+        {
+            @foreach (var nft in NFTs)
             {
-                @foreach (var nft in NFTs)
-                {
-                    <div class="border shadow rounded-xl overflow-hidden">
-                        <h3>@nft.Name</h3>
-                        <img src="@ConvertIpfsToHttp(nft.Image)" class="rounded" alt="@nft.Name" />
-                        <div class="p-4 bg-black">
-                            <p class="text-2xl font-bold text-white">Price - @nft.Price Eth</p>
+                <div class="col">
+                    <div class="card h-100 shadow rounded">
+                        <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top rounded" alt="@nft.Name" />
+                        <div class="card-body">
+                            <h5 class="card-title">@nft.Name</h5>
+                        </div>
+                        <div class="card-footer bg-dark">
+                            <h5 class="text-white">Price - @nft.Price Eth</h5>
                         </div>
                     </div>
-                }
+                </div>
             }
-            else
-            {
-                <h1 class="py-10 px-20 text-3xl">No NFTs listed</h1>
-            }
-        </div>
+        }
+        else
+        {
+            <div class="col">
+                <h1 class="py-10 text-3xl">No NFTs listed</h1>
+            </div>
+        }
     </div>
 </div>
 
@@ -45,10 +47,8 @@
         NFTs = await NFTService.LoadAllNFTs();
     }
 
-
     private string ConvertIpfsToHttp(string ipfsUrl)
     {
         return ipfsUrl.Replace("ipfs://", "https://we3ge.infura-ipfs.io/ipfs/");
     }
-
 }
