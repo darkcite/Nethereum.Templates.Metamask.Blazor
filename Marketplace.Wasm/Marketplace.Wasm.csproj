@@ -20,11 +20,12 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-    <PackageReference Include="Nethereum.Metamask.Blazor" Version="4.14.0" />
     <PackageReference Include="Nethereum.UI" Version="4.14.0" />
     <PackageReference Include="Nethereum.Web3" Version="4.14.0" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="7.0.2" />
+    <PackageReference Include="Blazor.Bootstrap" Version="1.7.3" />
+    <PackageReference Include="Nethereum.Metamask.Blazor" Version="4.14.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +41,7 @@
   <ItemGroup>
     <Content Remove="Pages\Index.razor" />
     <Content Remove="wwwroot\js\" />
+    <Content Remove="wwwroot\css\" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Properties\launchSettings.json">
@@ -57,5 +59,6 @@
     <Folder Include="Models\" />
     <Folder Include="Services\" />
     <Folder Include="wwwroot\js\" />
+    <Folder Include="wwwroot\css\" />
   </ItemGroup>
 </Project>
