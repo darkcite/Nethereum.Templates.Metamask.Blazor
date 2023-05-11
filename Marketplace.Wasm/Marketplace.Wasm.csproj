@@ -29,16 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Nethereum.Erc20.Blazor\Nethereum.Erc20.Blazor.csproj" />
-    <ProjectReference Include="..\ERC721ContractLibrary\ERC721ContractLibrary.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-    </ProjectReference>
-    <ProjectReference Include="..\Nethereum.XUnitEthereumClients\Nethereum.XUnitEthereumClients.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-    </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Remove="Pages\Index.razor" />
     <Content Remove="wwwroot\js\" />
     <Content Remove="wwwroot\css\" />
@@ -60,5 +50,10 @@
     <Folder Include="Services\" />
     <Folder Include="wwwroot\js\" />
     <Folder Include="wwwroot\css\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ERC721ContractLibrary\ERC721ContractLibrary.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>

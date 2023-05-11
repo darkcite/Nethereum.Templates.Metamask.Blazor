@@ -49,8 +49,6 @@ namespace Marketplace.Wasm
 
             builder.Services.AddSingleton<AuthenticationStateProvider, EthereumAuthenticationStateProvider>();
 
-            builder.Services.AddValidatorsFromAssemblyContaining<Nethereum.Erc20.Blazor.Erc20Transfer>();
-
             await builder.Build().RunAsync();
         }
     }
