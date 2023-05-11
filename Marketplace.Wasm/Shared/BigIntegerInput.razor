@@ -1,0 +1,30 @@
+﻿@using System.Numerics
+
+@inherits InputBase<BigInteger>
+
+<input @attributes="AdditionalAttributes"
+       class="@CssClass"
+       value="@CurrentValueAsString"
+       @oninput="OnInput" />
+
+@code {
+    private void OnInput(ChangeEventArgs e)
+    {
+        BigInteger.TryParse(e.Value.ToString(), out var result);
+        CurrentValue = result;
+    }
+
+    protected override bool TryParseValueFromString(string value, out BigInteger result, out string validationErrorMessage)
+    {
+        if (BigInteger.TryParse(value, out result))
+        {
+            validationErrorMessage = null;
+            return true;
+        }
+        else
+        {
+            validationErrorMessage = "The input was not a valid BigInteger.";
+            return false;
+        }
+    }
+}

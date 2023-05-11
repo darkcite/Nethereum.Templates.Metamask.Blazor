@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <Content Remove="Pages\Index.razor" />
+    <Content Remove="wwwroot\js\" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="Properties\launchSettings.json">
@@ -55,5 +56,6 @@
   <ItemGroup>
     <Folder Include="Models\" />
     <Folder Include="Services\" />
+    <Folder Include="wwwroot\js\" />
   </ItemGroup>
 </Project>

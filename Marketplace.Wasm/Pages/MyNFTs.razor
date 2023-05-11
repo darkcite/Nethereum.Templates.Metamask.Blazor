@@ -2,10 +2,12 @@
 @implements IDisposable
 @inject SelectedEthereumHostProviderService SelectedHostProviderService
 @using Marketplace.Wasm.Models
+@using System.Numerics;
 @inject Services.NFTService NftService
+@inject IJSRuntime JsRuntime
 
 <AuthorizeView Roles="EthereumConnected">
-    <Authorized>
+    <Authorized Context="authContext">
         <div class="card m-1">
             <div class="card-body">
                 <div class="row">
@@ -27,9 +29,33 @@
                             foreach (var nft in myNfts)
                             {
                                 <div>
+                                    <h2>@nft.Name</h2>
                                     <img src="@ConvertIpfsToHttp(nft.Image)" alt="@nft.Name" width="100" />
-                                    <p>@nft.Name</p>
-                                    <p>@nft.Description</p>
+                                    <button class="btn btn-primary" @onclick="() => OpenModal(nft)">Update NFT</button>
+                                </div>
+                                <!-- The Modal -->
+                                <div class="modal" tabindex="-1" id="@($"modal{nft.TokenId}")">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Update NFT</h5>
+                                                <button type="button" class="btn-close" @onclick="() => CloseModal(nft)"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <EditForm Model="@UpdateNftModel" OnValidSubmit="@(() => UpdateNFT(nft))">
+                                                    <DataAnnotationsValidator />
+                                                    <ValidationSummary />
+                                                    <BigIntegerInput id="price" @bind-Value="@UpdateNftModel.Price" placeholder="New price" />
+                                                    <InputCheckbox id="forSale" @bind-Value="@UpdateNftModel.ForSale" />For sale
+                                                    <InputText id="contactInfo" @bind-Value="@UpdateNftModel.ContactInfo" placeholder="New contact info" />
+                                                    <button type="submit" class="btn btn-primary">Update</button>
+                                                </EditForm>
+
+
+
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             }
                         }
@@ -50,6 +76,8 @@
     string SelectedAccount { get; set; }
     IEthereumHostProvider _ethereumHostProvider;
     List<NFT> myNfts;
+
+    private UpdateNftModel UpdateNftModel { get; set; } = new UpdateNftModel();
 
     protected override void OnInitialized()
     {
@@ -88,5 +116,29 @@
     private string ConvertIpfsToHttp(string ipfsUrl)
     {
         return ipfsUrl.Replace("ipfs://", "https://we3ge.infura-ipfs.io/ipfs/");
+    }
+
+    private void OpenModal(NFT nft)
+    {
+        UpdateNftModel = new UpdateNftModel
+        {
+            Price = nft.Price,
+            ForSale = nft.ForSale,
+            ContactInfo = nft.ContactInfo
+        };
+
+        JsRuntime.InvokeVoidAsync("openModal", $"modal{nft.TokenId}");
+    }
+
+    private void CloseModal(NFT nft)
+    {
+        JsRuntime.InvokeVoidAsync("closeModal", $"modal{nft.TokenId}");
+    }
+
+    private async Task UpdateNFT(NFT nft)
+    {
+        await NftService.UpdateNFTDetailsAsync(SelectedAccount, nft.TokenId, UpdateNftModel.Price, UpdateNftModel.ForSale, UpdateNftModel.ContactInfo);
+        await LoadMyNfts(); // to refresh the data
+        CloseModal(nft);
     }
 }
