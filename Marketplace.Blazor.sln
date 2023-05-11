@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32519.111
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nethereum.Erc20.Blazor", "Nethereum.Erc20.Blazor\Nethereum.Erc20.Blazor.csproj", "{684324A1-4DA3-4A69-80C5-2AB6A615E4C1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.Wasm", "Marketplace.Wasm\Marketplace.Wasm.csproj", "{BBEF0F1B-F19C-4011-A2A2-E84FB1733653}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERC721ContractLibrary", "ERC721ContractLibrary\ERC721ContractLibrary.csproj", "{8CEFFCB5-1BD4-421E-BC79-054075442F0F}"
@@ -26,10 +24,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{684324A1-4DA3-4A69-80C5-2AB6A615E4C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{684324A1-4DA3-4A69-80C5-2AB6A615E4C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{684324A1-4DA3-4A69-80C5-2AB6A615E4C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{684324A1-4DA3-4A69-80C5-2AB6A615E4C1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3F07F72E-2405-46C0-9FF8-7D1CDFB5AEA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3F07F72E-2405-46C0-9FF8-7D1CDFB5AEA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F07F72E-2405-46C0-9FF8-7D1CDFB5AEA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
