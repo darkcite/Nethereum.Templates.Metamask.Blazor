@@ -1,4 +1,4 @@
-@page "/dashboard"
+@page "/all-nfts"
 @* @using Marketplace.Wasm.Contracts *@
 @using Nethereum.Web3
 @using System.Net.Http.Json
@@ -42,7 +42,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        NFTs = await NFTService.LoadNFTsForSale();
+        NFTs = await NFTService.LoadAllNFTs();
     }
 
 

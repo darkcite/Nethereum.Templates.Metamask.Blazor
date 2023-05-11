@@ -12,6 +12,7 @@ using ERC721ContractLibrary.Contracts.MyERC721;
 using ERC721ContractLibrary.Contracts.MyERC721.ContractDefinition;
 using Nethereum.Contracts.Standards.ERC1155;
 using Nethereum.Contracts.Standards.ERC20.TokenList;
+using Nethereum.Hex.HexTypes;
 using Nethereum.Model;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Util;
@@ -25,6 +26,8 @@ namespace ERC721ContractLibrary.Testing
     public class MyErc1155Test
     {
         private readonly EthereumClientIntegrationFixture _ethereumClientIntegrationFixture;
+
+        private readonly string _contractId = "0xbE89078358a684290a8129B579d96dA127f24AB1";
 
         public MyErc1155Test(EthereumClientIntegrationFixture ethereumClientIntegrationFixture)
         {
@@ -51,7 +54,7 @@ namespace ERC721ContractLibrary.Testing
             var erc1155Service = new MyERC1155Service(web3, deploymentReceipt.ContractAddress);
 
             //uploading to ipfs our documents
-            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: "2OyEUF7r4netkvcqOQNPkAkyVHQ", password: "d98294208b5d4302c6fd510a4d4df4c1");
+            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: "2OyEUF7r4netkvcqOQNPkAkyVHQ", password: "");
             var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/hard-drive-by-vincent-botta-from-unsplash.jpg");
 
 
@@ -74,7 +77,7 @@ namespace ERC721ContractLibrary.Testing
             var metadataIpfs =
                 await nftIpfsService.AddNftsMetadataToIpfsAsync(metadataNFT, metadataNFT.ProductId + ".json");
 
-            var addressToRegisterOwnership = "0x465685122734334d2486D48bc340898BC314f71a";
+            var addressToRegisterOwnership = "0xcc065Ab4dB280a3fFA94057121Ed1807D468c30d";
 
             //Adding the product information
             var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(metadataNFT.ProductId,
@@ -140,9 +143,9 @@ namespace ERC721ContractLibrary.Testing
                     image = metadata.Image;
                 }
 
-                var tokenData = await erc1155Service.GetTokenDataAsync(log.Event.TokenId);
-                var setForSaleResult = erc1155Service.SetTokenForSaleStatusAsync(log.Event.TokenId, 10, true, "sraka");
-                tokenData = await erc1155Service.GetTokenDataAsync(log.Event.TokenId);
+                //var tokenData = await erc1155Service.GetTokenDataAsync(log.Event.TokenId);
+                //var setForSaleResult = erc1155Service.SetTokenForSaleStatusAsync(log.Event.TokenId, 10, true, "sraka");
+                //tokenData = await erc1155Service.GetTokenDataAsync(log.Event.TokenId);
             }
 
 
@@ -157,7 +160,7 @@ namespace ERC721ContractLibrary.Testing
             //example of configuration as legacy (not eip1559) to work on L2s
             web3.Eth.TransactionManager.UseLegacyAsDefault = true;
             //creating a new service with the new contract address
-            var erc1155Service = new MyERC1155Service(web3, "0x92fd8Fe190a149685164Cf60C6188Aff90993277");
+            var erc1155Service = new MyERC1155Service(web3, _contractId);
 
             //uploading to ipfs our documents
             var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: "2OyEUF7r4netkvcqOQNPkAkyVHQ", password: "d98294208b5d4302c6fd510a4d4df4c1");
@@ -183,7 +186,7 @@ namespace ERC721ContractLibrary.Testing
             var metadataIpfs =
                 await nftIpfsService.AddNftsMetadataToIpfsAsync(metadataNFT, metadataNFT.ProductId + ".json");
 
-            var addressToRegisterOwnership = "0x465685122734334d2486D48bc340898BC314f71a";
+            var addressToRegisterOwnership = "0xcc065Ab4dB280a3fFA94057121Ed1807D468c30d";
 
             //Adding the product information
             var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(metadataNFT.ProductId,
@@ -199,11 +202,11 @@ namespace ERC721ContractLibrary.Testing
             //example of configuration as legacy (not eip1559) to work on L2s
             web3.Eth.TransactionManager.UseLegacyAsDefault = true;
             //creating a new service with the new contract address
-            var erc1155Service = new MyERC1155Service(web3, "0x92fd8Fe190a149685164Cf60C6188Aff90993277");
+            var erc1155Service = new MyERC1155Service(web3, _contractId);
 
             //uploading to ipfs our documents
-            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: "2OyEUF7r4netkvcqOQNPkAkyVHQ", password: "");
-            var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/hard-drive-by-vincent-botta-from-unsplash.jpg");
+            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: "2OyEUF7r4netkvcqOQNPkAkyVHQ", password: "d98294208b5d4302c6fd510a4d4df4c1");
+            var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/3.jpg");
 
 
             //adding all our document ipfs links to the metadata and the description
@@ -213,7 +216,7 @@ namespace ERC721ContractLibrary.Testing
                 Name = "wakawaka",
                 Image = "ipfs://" + imageIpfs.Hash, //The image is what is displayed in market places like opean sea
                 Description = @"sraka",
-                ExternalUrl = "https://github.com/Nethereum/ERC721ContractLibrary.Template",
+                ExternalUrl = "",
                 Decimals = 0
             };
             var stockHardDrive = 30;
@@ -221,7 +224,7 @@ namespace ERC721ContractLibrary.Testing
             var metadataIpfs =
                 await nftIpfsService.AddNftsMetadataToIpfsAsync(metadataNFT, metadataNFT.ProductId + ".json");
 
-            var addressToRegisterOwnership = "0x465685122734334d2486D48bc340898BC314f71a";
+            var addressToRegisterOwnership = "0xcc065Ab4dB280a3fFA94057121Ed1807D468c30d";
 
             //Adding the product information
             var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(metadataNFT.ProductId,
@@ -239,10 +242,10 @@ namespace ERC721ContractLibrary.Testing
             //example of configuration as legacy (not eip1559) to work on L2s
             web3.Eth.TransactionManager.UseLegacyAsDefault = true;
             //creating a new service with the new contract address
-            var erc1155Service = new MyERC1155Service(web3, "0x92fd8Fe190a149685164Cf60C6188Aff90993277");
+            var erc1155Service = new MyERC1155Service(web3, _contractId);
             // Retrieve logs for the "TokenCreated" event
             var filterInput = erc1155Service.GetTokenMintedEvent().CreateFilterInput(
-                new BlockParameter(), // block number  from deployment reciept???
+                new BlockParameter(new HexBigInteger(0)),//new BlockParameter(), // block number  from deployment reciept???
                 BlockParameter.CreateLatest()
             );
 
@@ -274,8 +277,8 @@ namespace ERC721ContractLibrary.Testing
                 }
                 // listing for sale
                 var tokenData = await erc1155Service.GetTokenDataAsync(log.Event.TokenId);
-                var setForSaleResult = erc1155Service.SetTokenForSaleStatusAsync(log.Event.TokenId, 10, true, "sraka");
-                tokenData = await erc1155Service.GetTokenDataAsync(log.Event.TokenId);
+                //var setForSaleResult = erc1155Service.SetTokenForSaleStatusAsync(log.Event.TokenId, 10, true, "sraka");
+                //tokenData = await erc1155Service.GetTokenDataAsync(log.Event.TokenId);
                 // TODO: test buy 
             }
 
