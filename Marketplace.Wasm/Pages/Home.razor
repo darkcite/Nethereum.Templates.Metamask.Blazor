@@ -20,13 +20,14 @@
                             <h5 class="card-title">@nft.Name</h5>
                             <p class="card-text text-truncate">@nft.Description</p>
                         </div>
-                        <div class="card-footer bg-dark">
-                            <h5 class="text-white">@nft.Price ETH</h5>
-                            <button class="btn btn-primary w-100" @onclick="() => BuyNFT(nft)">Buy</button>
+                        <div class="card-footer bg-dark d-flex justify-content-between align-items-center">
+                            <h5 class="text-white mb-0">@Web3.Convert.FromWei(nft.Price).ToString("F4") ETH</h5>
+                            <button class="btn btn-primary" @onclick="() => BuyNFT(nft)">Buy</button>
                         </div>
                     </div>
                 </div>
             }
+
         }
         else
         {
