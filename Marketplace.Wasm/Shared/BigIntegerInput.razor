@@ -2,18 +2,9 @@
 
 @inherits InputBase<BigInteger>
 
-<input @attributes="AdditionalAttributes"
-       class="@CssClass"
-       value="@CurrentValueAsString"
-       @oninput="OnInput" />
+<input @attributes="AdditionalAttributes" @bind="CurrentValueAsString" />
 
 @code {
-    private void OnInput(ChangeEventArgs e)
-    {
-        BigInteger.TryParse(e.Value.ToString(), out var result);
-        CurrentValue = result;
-    }
-
     protected override bool TryParseValueFromString(string value, out BigInteger result, out string validationErrorMessage)
     {
         if (BigInteger.TryParse(value, out result))

@@ -28,24 +28,26 @@
                         {
                             foreach (var nft in myNfts)
                             {
-                                <div>
-                                    <h2>@nft.Name</h2>
-                                    <img src="@ConvertIpfsToHttp(nft.Image)" alt="@nft.Name" width="100" />
-                                    <button class="btn btn-primary" @onclick="() => OpenModal(nft)">Update NFT</button>
-                                </div>
+                    <div>
+                        <h2>@nft.Name</h2>
+                        <img src="@ConvertIpfsToHttp(nft.Image)" alt="@nft.Name" width="100" />
+                        <button class="btn btn-primary" @onclick="() => OpenModal(nft.TokenId)">Update NFT</button>
+
+                    </div>
                                 <!-- The Modal -->
                                 <div class="modal" tabindex="-1" id="@($"modal{nft.TokenId}")">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title">Update NFT</h5>
-                                                <button type="button" class="btn-close" @onclick="() => CloseModal(nft)"></button>
+                                                <button type="button" class="btn-close" @onclick="() => CloseModal(nft.TokenId)"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <EditForm Model="@UpdateNftModel" OnValidSubmit="@(() => UpdateNFT(nft))">
+                                                <EditForm Model="@UpdateNftModel" OnValidSubmit="() => UpdateNFT(nft.TokenId)">
+
                                                     <DataAnnotationsValidator />
                                                     <ValidationSummary />
-                                                    <BigIntegerInput id="price" @bind-Value="@UpdateNftModel.Price" placeholder="New price" />
+                                                    <BigIntegerInput @bind-Value="@UpdateNftModel.Price" id="price" placeholder="New price" />
                                                     <InputCheckbox id="forSale" @bind-Value="@UpdateNftModel.ForSale" />For sale
                                                     <InputText id="contactInfo" @bind-Value="@UpdateNftModel.ContactInfo" placeholder="New contact info" />
                                                     <button type="submit" class="btn btn-primary">Update</button>
@@ -118,27 +120,32 @@
         return ipfsUrl.Replace("ipfs://", "https://we3ge.infura-ipfs.io/ipfs/");
     }
 
-    private void OpenModal(NFT nft)
+    private async Task UpdateNFT(BigInteger tokenId)
+    {
+        await NftService.UpdateNFTDetailsAsync(SelectedAccount, tokenId, UpdateNftModel.Price, UpdateNftModel.ForSale, UpdateNftModel.ContactInfo);
+        await LoadMyNfts(); // to refresh the data
+        CloseModal(tokenId);
+    }
+
+
+    private void OpenModal(BigInteger tokenId)
     {
         UpdateNftModel = new UpdateNftModel
         {
-            Price = nft.Price,
-            ForSale = nft.ForSale,
-            ContactInfo = nft.ContactInfo
+            Price = myNfts.FirstOrDefault(n => n.TokenId == tokenId).Price,
+            ForSale = myNfts.FirstOrDefault(n => n.TokenId == tokenId).ForSale,
+            ContactInfo = myNfts.FirstOrDefault(n => n.TokenId == tokenId).ContactInfo
         };
 
-        JsRuntime.InvokeVoidAsync("openModal", $"modal{nft.TokenId}");
+        JsRuntime.InvokeVoidAsync("window.openModal", $"modal{tokenId}");
     }
 
-    private void CloseModal(NFT nft)
+    private void CloseModal(BigInteger tokenId)
     {
-        JsRuntime.InvokeVoidAsync("closeModal", $"modal{nft.TokenId}");
+        JsRuntime.InvokeVoidAsync("window.closeModal", $"modal{tokenId}");
     }
 
-    private async Task UpdateNFT(NFT nft)
-    {
-        await NftService.UpdateNFTDetailsAsync(SelectedAccount, nft.TokenId, UpdateNftModel.Price, UpdateNftModel.ForSale, UpdateNftModel.ContactInfo);
-        await LoadMyNfts(); // to refresh the data
-        CloseModal(nft);
-    }
+
+
+
 }
