@@ -1,5 +1,11 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+@import url('https://fonts.googleapis.com/css2?family=Bruno+Ace&display=swap');
+
+.nav-link {
+    font-family: 'Bruno Ace', sans-serif;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -28,6 +34,10 @@ a, .btn-link {
 
 .validation-message {
     color: red;
+}
+
+.custom-nav {
+    background-color: #ffffff !important;
 }
 
 #blazor-error-ui {
