@@ -1,4 +1,4 @@
-﻿@page "/user-profile"
+﻿@page "/service-page"
 @using Nethereum.ABI.EIP712
 @using Nethereum.ABI.FunctionEncoding.Attributes
 @using Nethereum.Erc20.Blazor;
@@ -25,7 +25,7 @@
                         <small id="selectedAccountHelp" class="form-text text-muted">The selected account is bound to the host (ie Metamask) on change</small>
                     </div>
                 </div>
-                 <div class="row">
+                <div class="row">
                     <label class="col-sm-3 col-form-label-lg">Selected Account from Claims Principal</label>
                     <div class="col-sm-6">
                         @context?.User?.FindFirst(c => c.Type.Contains(ClaimTypes.NameIdentifier))?.Value
@@ -33,7 +33,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="card-body">
                 <div class="row">
                     <label class="col-sm-3 col-form-label-lg">Selected Network ChainId:</label>
@@ -91,7 +91,7 @@
                     <label class="col-sm-3 col-form-label-lg">Add Chain</label>
                     <div class="col-sm-6">
                         <button @onclick="@AddChain">Add Chain (Optimism)</button>
-                        
+
                         <small id="selectedAccountHelp" class="form-text text-muted">Adds a new chain (Optimism) to Metamask</small>
                     </div>
                 </div>
@@ -206,24 +206,27 @@
     protected async Task AddChain()
     {
         var web3 = await _ethereumHostProvider.GetWeb3Async();
-        var optimismChain = new AddEthereumChainParameter() {
-                ChainId = new HexBigInteger(10), ChainName = "Optimism", NativeCurrency = new NativeCurrency()
-                {
-                    Decimals = 18,
-                    Name = "ETH",
-                    Symbol = "ETH"
-                },
-                RpcUrls = new List<string> { "https://mainnet.optimism.io", "https://rpc.ankr.com/optimism" },
-                BlockExplorerUrls = new List<string> { "https://optimistic.etherscan.io/"},
+        var optimismChain = new AddEthereumChainParameter()
+        {
+            ChainId = new HexBigInteger(10),
+            ChainName = "Optimism",
+            NativeCurrency = new NativeCurrency()
+            {
+                Decimals = 18,
+                Name = "ETH",
+                Symbol = "ETH"
+            },
+            RpcUrls = new List<string> { "https://mainnet.optimism.io", "https://rpc.ankr.com/optimism" },
+            BlockExplorerUrls = new List<string> { "https://optimistic.etherscan.io/" },
 
-            };
+        };
         try
         {
             var result = await web3.Eth.HostWallet.AddEthereumChain.SendRequestAsync(optimismChain);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            
+
         }
     }
 
@@ -231,27 +234,27 @@
     {
         RecoveredAccount = "";
         var web3 = await _ethereumHostProvider.GetWeb3Async();
-       
+
 
         var typedData = GetMailTypedDefinition();
 
         var mail = new Mail
+        {
+            From = new Person
             {
-                From = new Person
-                {
-                    Name = "Cow",
-                    Wallets = new List<string> { "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826", "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF" }
-                },
-                To = new List<Person>
-                {
+                Name = "Cow",
+                Wallets = new List<string> { "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826", "0xDeaDbeefdEAdbeefdEadbEEFdeadbeEFdEaDbeeF" }
+            },
+            To = new List<Person>
+            {
                     new Person
                     {
                         Name = "Bob",
                         Wallets = new List<string> { "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB", "0xB0BdaBea57B0BDABeA57b0bdABEA57b0BDabEa57", "0xB0B0b0b0b0b0B000000000000000000000000000" }
                     }
                 },
-                Contents = "Hello, Bob!"
-            };
+            Contents = "Hello, Bob!"
+        };
 
         typedData.Domain.ChainId = 1;
         typedData.SetMessage(mail);
@@ -282,19 +285,18 @@
     public TypedData<Domain> GetMailTypedDefinition()
     {
         return new TypedData<Domain>
+        {
+            Domain = new Domain
             {
-                Domain = new Domain
-                {
-                    Name = "Ether Mail",
-                    Version = "1",
-                    ChainId = 1,
-                    VerifyingContract = "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
-                },
-                Types = MemberDescriptionFactory.GetTypesMemberDescription(typeof(Domain), typeof(Group), typeof(Mail), typeof(Person)),
-                PrimaryType = nameof(Mail),
-            };
+                Name = "Ether Mail",
+                Version = "1",
+                ChainId = 1,
+                VerifyingContract = "0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+            },
+            Types = MemberDescriptionFactory.GetTypesMemberDescription(typeof(Domain), typeof(Group), typeof(Mail), typeof(Person)),
+            PrimaryType = nameof(Mail),
+        };
     }
 
 }
-
 

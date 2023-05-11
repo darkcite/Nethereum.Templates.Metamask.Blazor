@@ -1,58 +1,92 @@
 @page "/my-nfts"
-@* @using Marketplace.Wasm.Contracts *@
-@using Nethereum.Web3
-@using System.Net.Http.Json
-@using Microsoft.AspNetCore.Components.Web
+@implements IDisposable
+@inject SelectedEthereumHostProviderService SelectedHostProviderService
 @using Marketplace.Wasm.Models
-@* @inject IWeb3Provider Web3Provider *@
-@inject NavigationManager NavigationManager
-@inject Services.MetaMaskService MetaMaskService
+@inject Services.NFTService NftService
 
-<div class="flex justify-center">
-    <div class="p-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-            <p>@Account</p>
-            @if (NFTs != null && NFTs.Count > 0)
-            {
-                @foreach (var nft in NFTs)
-                {
-                    <div class="border shadow rounded-xl overflow-hidden">
-                        <img src="@nft.Image" class="rounded" />
-                        <div class="p-4 bg-black">
-                            <p class="text-2xl font-bold text-white">Price - @nft.Price Eth</p>
-                            <button class="mt-4 w-full bg-pink-500 text-white font-bold py-2 px-12 rounded" @onclick="() => ListNFT(nft)">List</button>
-                        </div>
+<AuthorizeView Roles="EthereumConnected">
+    <Authorized>
+        <div class="card m-1">
+            <div class="card-body">
+                <div class="row">
+                    <label class="col-sm-3 col-form-label-lg">Selected Account:</label>
+                    <div class="col-sm-6">
+                        @SelectedAccount
+                        <small id="selectedAccountHelp" class="form-text text-muted">The selected account is bound to the host (ie Metamask) on change</small>
                     </div>
-                }
-            }
-            else
-            {
-                <h1 class="py-10 px-20 text-3xl">No NFTs owned</h1>
-            }
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h2>My NFTs:</h2>
+                        @if (myNfts == null)
+                        {
+                            <p>Loading...</p>
+                        }
+                        else
+                        {
+                            foreach (var nft in myNfts)
+                            {
+                                <div>
+                                    <img src="@ConvertIpfsToHttp(nft.Image)" alt="@nft.Name" width="100" />
+                                    <p>@nft.Name</p>
+                                    <p>@nft.Description</p>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <div>
+            Please connect to Ethereum !
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
-    private string Account { get; set; }
+    bool EthereumAvailable { get; set; }
+    string SelectedAccount { get; set; }
+    IEthereumHostProvider _ethereumHostProvider;
+    List<NFT> myNfts;
 
-    private List<NFT> NFTs { get; set; } = new();
+    protected override void OnInitialized()
+    {
+        //metamask is selected
+        _ethereumHostProvider = SelectedHostProviderService.SelectedHost;
+        _ethereumHostProvider.SelectedAccountChanged += HostProvider_SelectedAccountChanged;
+    }
+
+    public void Dispose()
+    {
+        _ethereumHostProvider.SelectedAccountChanged -= HostProvider_SelectedAccountChanged;
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        Account = await MetaMaskService.GetUserAccountAsync();
-
-        await LoadNFTs();
+        EthereumAvailable = await _ethereumHostProvider.CheckProviderAvailabilityAsync();
+        if (EthereumAvailable)
+        {
+            SelectedAccount = await _ethereumHostProvider.GetProviderSelectedAccountAsync();
+            await LoadMyNfts();
+        }
     }
 
-    private async Task LoadNFTs()
+    private async Task HostProvider_SelectedAccountChanged(string account)
     {
-        // Add your logic to load NFTs
+        SelectedAccount = account;
+        await LoadMyNfts();
+        this.StateHasChanged();
     }
 
-    private void ListNFT(NFT nft)
+    private async Task LoadMyNfts()
     {
-        // Implement your logic for listing NFT
-        NavigationManager.NavigateTo($"/resell-nft?id={nft.TokenId}&tokenURI={nft.TokenURI}");
+        myNfts = await NftService.LoadNFTsOwnedByAccount(SelectedAccount);
+    }
+
+    private string ConvertIpfsToHttp(string ipfsUrl)
+    {
+        return ipfsUrl.Replace("ipfs://", "https://we3ge.infura-ipfs.io/ipfs/");
     }
 }

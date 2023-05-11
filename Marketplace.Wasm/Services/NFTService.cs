@@ -23,7 +23,7 @@ namespace Marketplace.Wasm.Services
             _configuration = configuration;
         }
 
-        private async Task<List<NFT>> LoadNFTs(Func<TokenDataOutputDTO, bool> filter)
+        private async Task<List<NFT>> LoadNFTs(Func<TokenDataOutputDTO, bool> filter, string account = null)
         {
             List<NFT> NFTs = new List<NFT>();
 
@@ -57,6 +57,17 @@ namespace Marketplace.Wasm.Services
 
                     if (filter(tokenData))
                     {
+                        // If account is specified, check the balance
+                        if (!string.IsNullOrEmpty(account))
+                        {
+                            var balance = await erc1155Service.BalanceOfQueryAsync(account, log.Event.TokenId);
+                            if (balance.IsZero)
+                            {
+                                // Skip this NFT if the balance is zero for the specified account
+                                continue;
+                            }
+                        }
+
                         NFTs.Add(new NFT
                         {
                             Image = metadata.Image,
@@ -73,10 +84,10 @@ namespace Marketplace.Wasm.Services
             return NFTs;
         }
 
-        public Task<List<NFT>> LoadAllNFTs() => LoadNFTs(_ => true);
+        public Task<List<NFT>> LoadAllNFTs(string account = null) => LoadNFTs(_ => true, account);
 
-        public Task<List<NFT>> LoadNFTsForSale() => LoadNFTs(tokenData => tokenData.ForSale);
+        public Task<List<NFT>> LoadNFTsForSale(string account = null) => LoadNFTs(tokenData => tokenData.ForSale, account);
 
+        public Task<List<NFT>> LoadNFTsOwnedByAccount(string account) => LoadNFTs(_ => true, account);
     }
 }
-
