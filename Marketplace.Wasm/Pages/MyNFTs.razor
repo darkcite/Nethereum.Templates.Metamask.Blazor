@@ -25,50 +25,54 @@
                     }
                     else
                     {
-                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                            @foreach (var nft in myNfts)
-                            {
-                                <div class="col">
-                                    <div class="card h-100">
-                                        <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top" alt="@nft.Name" />
-                                        <div class="card-body">
-                                            <h5 class="card-title">@nft.Name</h5>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                    @foreach (var nft in myNfts)
+                    {
+                        <div class="col">
+                            <div class="card h-100">
+                                <div class="square-image">
+                                    <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top" alt="@nft.Name" />
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">@nft.Name</h5>
+                                    <p class="card-text">TokenId: @nft.TokenId</p>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-primary" @onclick="() => OpenModal(nft.TokenId)">Update NFT</button>
+                                </div>
+                            </div>
+                            <!-- The Modal -->
+                            <div class="modal" tabindex="-1" id="@($"modal{nft.TokenId.ToString()}")">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Update NFT</h5>
+                                            <button type="button" class="btn-close" @onclick="() => CloseModal(nft.TokenId)"></button>
                                         </div>
-                                        <div class="card-footer">
-                                            <button class="btn btn-primary" @onclick="() => OpenModal(nft.TokenId)">Update NFT</button>
-                                        </div>
-                                    </div>
-                                    <!-- The Modal -->
-                                    <div class="modal" tabindex="-1" id="@($"modal{nft.TokenId.ToString()}")">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Update NFT</h5>
-                                                    <button type="button" class="btn-close" @onclick="() => CloseModal(nft.TokenId)"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <EditForm Model="@UpdateNftModel" OnValidSubmit="() => UpdateNFT(nft.TokenId)">
-                                                        <DataAnnotationsValidator />
-                                                        <ValidationSummary />
+                                        <div class="modal-body">
+                                            <EditForm Model="@UpdateNftModel" OnValidSubmit="() => UpdateNFT(nft.TokenId)">
+                                                <DataAnnotationsValidator />
+                                                <ValidationSummary />
 
-                                                        <div class="form-group mb-3">
-                                                            <BigIntegerInput @bind-Value="@UpdateNftModel.Price" id="price" placeholder="New price" class="form-control" />
-                                                        </div>
-                                                        <div class="form-group mb-3">
-                                                            <InputCheckbox id="forSale" @bind-Value="@UpdateNftModel.ForSale" /> For sale
-                                                        </div>
-                                                        <div class="form-group mb-3">
-                                                            <InputText id="contactInfo" @bind-Value="@UpdateNftModel.ContactInfo" placeholder="New contact info" class="form-control" />
-                                                        </div>
-                                                        <button type="submit" class="btn btn-primary">Update</button>
-                                                    </EditForm>
+                                                <div class="form-group mb-3">
+                                                    <BigIntegerInput @bind-Value="@UpdateNftModel.Price" id="price" placeholder="New price" class="form-control" />
                                                 </div>
-                                            </div>
+                                                <div class="form-group mb-3">
+                                                    <InputCheckbox id="forSale" @bind-Value="@UpdateNftModel.ForSale" /> For sale
+                                                </div>
+                                                <div class="form-group mb-3">
+                                                    <InputText id="contactInfo" @bind-Value="@UpdateNftModel.ContactInfo" placeholder="New contact info" class="form-control" />
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Update</button>
+                                            </EditForm>
                                         </div>
                                     </div>
                                 </div>
-                            }
+                            </div>
                         </div>
+                    }
+
+                </div>
                     }
                 </div>
             </div>

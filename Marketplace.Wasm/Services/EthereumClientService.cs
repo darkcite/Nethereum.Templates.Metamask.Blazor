@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.JSInterop;
 using Nethereum.Web3;
 using Nethereum.Web3.Accounts;
 using System;
@@ -7,12 +8,14 @@ namespace Marketplace.Wasm.Services
 {
     public class EthereumClientService
     {
+        private readonly IJSRuntime _jsRuntime;
         private readonly Web3 _web3;
         private readonly IConfiguration _configuration;
 
-        public EthereumClientService(IConfiguration configuration)
+        public EthereumClientService(IConfiguration configuration, IJSRuntime jsRuntime)
         {
             _configuration = configuration;
+            _jsRuntime = jsRuntime;
             _web3 = BuildWeb3();
         }
 

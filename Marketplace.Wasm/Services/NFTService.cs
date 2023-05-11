@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using ERC721ContractLibrary.Contracts.MyERC1155.ContractDefinition;
 using Nethereum.Hex.HexTypes;
 using System.Numerics;
+using Nethereum.Contracts.Standards.ERC1155;
 
 namespace Marketplace.Wasm.Services
 {
@@ -18,10 +19,19 @@ namespace Marketplace.Wasm.Services
         private EthereumClientService _ethereumClientService;
         private readonly IConfiguration _configuration;
 
+        private string _contractAddress;
+        private MyERC1155Service _erc1155Service;
+
         public NFTService(EthereumClientService ethereumClientService, IConfiguration configuration)
         {
             _ethereumClientService = ethereumClientService;
             _configuration = configuration;
+
+            var web3 = _ethereumClientService.GetWeb3();
+            web3.Eth.TransactionManager.UseLegacyAsDefault = true;
+
+            _contractAddress = _configuration.GetValue<string>("Ethereum:ContractAddress");
+            _erc1155Service = new MyERC1155Service(web3, _contractAddress);
         }
 
         private async Task<List<NFT>> LoadNFTs(Func<TokenDataOutputDTO, bool> filter, string account = null)
@@ -31,18 +41,15 @@ namespace Marketplace.Wasm.Services
             var web3 = _ethereumClientService.GetWeb3();
             web3.Eth.TransactionManager.UseLegacyAsDefault = true;
 
-            var contractAddress = _configuration.GetValue<string>("Ethereum:ContractAddress");
-            var erc1155Service = new MyERC1155Service(web3, contractAddress);
-
-            var filterInput = erc1155Service.GetTokenMintedEvent().CreateFilterInput(
+            var filterInput = _erc1155Service.GetTokenMintedEvent().CreateFilterInput(
                 new BlockParameter(new HexBigInteger(0)), // TODO: replace with new BlockParameter(deploymentReceipt.BlockNumber),
                 BlockParameter.CreateLatest());
             var eventLogs = await web3.Eth.Filters.GetLogs.SendRequestAsync(filterInput);
 
-            var decodedLog = erc1155Service.GetTokenMintedEvent().DecodeAllEventsForEvent(eventLogs);
+            var decodedLog = _erc1155Service.GetTokenMintedEvent().DecodeAllEventsForEvent(eventLogs);
             foreach (var log in decodedLog)
             {
-                string tokenUri = await erc1155Service.UriQueryAsync(log.Event.TokenId);
+                string tokenUri = await _erc1155Service.UriQueryAsync(log.Event.TokenId);
                 var ipfsGatewayUrl = _configuration.GetValue<string>("IPFS:GatewayUrl");
                 string httpGatewayUrl = tokenUri.Replace("ipfs://", ipfsGatewayUrl);
 
@@ -54,14 +61,14 @@ namespace Marketplace.Wasm.Services
                     string metadataJson = await response.Content.ReadAsStringAsync();
                     NFTMetadata metadata = JsonConvert.DeserializeObject<NFTMetadata>(metadataJson);
 
-                    var tokenData = await erc1155Service.GetTokenDataAsync(log.Event.TokenId);
+                    var tokenData = await _erc1155Service.GetTokenDataAsync(log.Event.TokenId);
 
                     if (filter(tokenData))
                     {
                         // If account is specified, check the balance
                         if (!string.IsNullOrEmpty(account))
                         {
-                            var balance = await erc1155Service.BalanceOfQueryAsync(account, log.Event.TokenId);
+                            var balance = await _erc1155Service.BalanceOfQueryAsync(account, log.Event.TokenId);
                             if (balance.IsZero)
                             {
                                 // Skip this NFT if the balance is zero for the specified account
@@ -93,11 +100,7 @@ namespace Marketplace.Wasm.Services
 
         public async Task UpdateNFTDetailsAsync(string accountId, BigInteger tokenId, BigInteger newPrice, bool newStatus, string newContactInfo)
         {
-            var web3 = _ethereumClientService.GetWeb3();
-            var contractAddress = _configuration.GetValue<string>("Ethereum:ContractAddress");
-            var erc1155Service = new MyERC1155Service(web3, contractAddress);
-
-            var receipt = await erc1155Service.SetTokenForSaleStatusAsync(tokenId, newPrice, newStatus, newContactInfo);
+            var receipt = await _erc1155Service.SetTokenForSaleStatusAsync(tokenId, newPrice, newStatus, newContactInfo);
         }
     }
 }

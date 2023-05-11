@@ -19,7 +19,9 @@
             {
                 <div class="col">
                     <div class="card h-100 shadow rounded">
-                        <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top rounded" alt="@nft.Name" />
+                        <div class="square-image">
+                            <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top rounded" alt="@nft.Name" />
+                        </div>
                         <div class="card-body">
                             <h5 class="card-title">@nft.Name</h5>
                         </div>
@@ -29,6 +31,7 @@
                     </div>
                 </div>
             }
+
         }
         else
         {
