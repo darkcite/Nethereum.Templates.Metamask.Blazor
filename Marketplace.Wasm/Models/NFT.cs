@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Numerics;
 namespace Marketplace.Wasm.Models
 {
     public class NFT
     {
-        public string Price { get; set; }
+        public BigInteger Price { get; set; }
         public int TokenId { get; set; }
         public string Seller { get; set; }
         public string Owner { get; set; }
@@ -12,7 +13,7 @@ namespace Marketplace.Wasm.Models
         public string Description { get; set; }
         public string TokenURI { get; set; }
         public bool ForSale { get; set; }
-
+        public string ContactInfo { get; set; }
     }
 
 }

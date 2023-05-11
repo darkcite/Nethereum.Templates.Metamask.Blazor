@@ -9,6 +9,7 @@ using System.Net.Http;
 using Microsoft.Extensions.Configuration;
 using ERC721ContractLibrary.Contracts.MyERC1155.ContractDefinition;
 using Nethereum.Hex.HexTypes;
+using System.Numerics;
 
 namespace Marketplace.Wasm.Services
 {
@@ -74,7 +75,7 @@ namespace Marketplace.Wasm.Services
                             Description = metadata.Description,
                             Name = metadata.Name,
                             TokenId = metadata.ProductId,
-                            Price = tokenData.Price.ToString(),
+                            Price = tokenData.Price,
                             ForSale = tokenData.ForSale
                         });
                     }
@@ -89,5 +90,14 @@ namespace Marketplace.Wasm.Services
         public Task<List<NFT>> LoadNFTsForSale(string account = null) => LoadNFTs(tokenData => tokenData.ForSale, account);
 
         public Task<List<NFT>> LoadNFTsOwnedByAccount(string account) => LoadNFTs(_ => true, account);
+
+        public async Task UpdateNFTDetailsAsync(string accountId, BigInteger tokenId, BigInteger newPrice, bool newStatus, string newContactInfo)
+        {
+            var web3 = _ethereumClientService.GetWeb3();
+            var contractAddress = _configuration.GetValue<string>("Ethereum:ContractAddress");
+            var erc1155Service = new MyERC1155Service(web3, contractAddress);
+
+            var receipt = await erc1155Service.SetTokenForSaleStatusAsync(tokenId, newPrice, newStatus, newContactInfo);
+        }
     }
 }
