@@ -8,8 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using ERC721ContractLibrary.Contracts.MyERC1155;
 using ERC721ContractLibrary.Contracts.MyERC1155.ContractDefinition;
-using ERC721ContractLibrary.Contracts.MyERC721;
-using ERC721ContractLibrary.Contracts.MyERC721.ContractDefinition;
 using Nethereum.Contracts.Standards.ERC1155;
 using Nethereum.Contracts.Standards.ERC20.TokenList;
 using Nethereum.Hex.HexTypes;

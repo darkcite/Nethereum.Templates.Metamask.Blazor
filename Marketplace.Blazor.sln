@@ -14,8 +14,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D4FDA939-F13E-4A10-9D4D-F25D8E5320B6}"
 	ProjectSection(SolutionItems) = preProject
 		contracts\MyERC1155.sol = contracts\MyERC1155.sol
-		contracts\MyGovernor.sol = contracts\MyGovernor.sol
-		contracts\MyERC721.sol = contracts\MyERC721.sol
 	EndProjectSection
 EndProject
 Global
