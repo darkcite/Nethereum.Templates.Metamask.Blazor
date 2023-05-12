@@ -1,4 +1,4 @@
 # Nethereum.Templates.Metamask.Blazor
-NFT marketplace to trade with tokens linked to physical items
+NFT marketplace based on ERC-1155 to trade with tokens linked to physical items
 
 
