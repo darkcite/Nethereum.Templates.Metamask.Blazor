@@ -10,7 +10,7 @@ using Nethereum.Contracts.CQS;
 using Nethereum.Contracts;
 using System.Threading;
 
-namespace ERC721ContractLibrary.Contracts.MyERC1155.ContractDefinition
+namespace ERC1155ContractLibrary.Contracts.MyERC1155.ContractDefinition
 {
 
 

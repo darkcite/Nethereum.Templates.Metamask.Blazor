@@ -5,9 +5,9 @@ VisualStudioVersion = 17.3.32519.111
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.Wasm", "Marketplace.Wasm\Marketplace.Wasm.csproj", "{BBEF0F1B-F19C-4011-A2A2-E84FB1733653}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERC721ContractLibrary", "ERC721ContractLibrary\ERC721ContractLibrary.csproj", "{8CEFFCB5-1BD4-421E-BC79-054075442F0F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERC1155ContractLibrary", "ERC1155ContractLibrary\ERC1155ContractLibrary.csproj", "{8CEFFCB5-1BD4-421E-BC79-054075442F0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERC721ContractLibrary.Testing", "ERC721ContractLibrary.Testing\ERC721ContractLibrary.Testing.csproj", "{C47CE8A0-94A6-456A-AD42-98940058E1F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERC1155ContractLibrary.Testing", "ERC1155ContractLibrary.Testing\ERC1155ContractLibrary.Testing.csproj", "{C47CE8A0-94A6-456A-AD42-98940058E1F0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nethereum.XUnitEthereumClients", "Nethereum.XUnitEthereumClients\Nethereum.XUnitEthereumClients.csproj", "{B70D0283-7A4B-405E-94E8-A18C50D49295}"
 EndProject

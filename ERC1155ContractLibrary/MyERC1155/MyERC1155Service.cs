@@ -10,9 +10,9 @@ using Nethereum.Contracts.CQS;
 using Nethereum.Contracts.ContractHandlers;
 using Nethereum.Contracts;
 using System.Threading;
-using ERC721ContractLibrary.Contracts.MyERC1155.ContractDefinition;
+using ERC1155ContractLibrary.Contracts.MyERC1155.ContractDefinition;
 
-namespace ERC721ContractLibrary.Contracts.MyERC1155
+namespace ERC1155ContractLibrary.Contracts.MyERC1155
 {
     public partial class MyERC1155Service
     {

@@ -2,12 +2,12 @@
 using Marketplace.Wasm.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ERC721ContractLibrary.Contracts.MyERC1155;
+using ERC1155ContractLibrary.Contracts.MyERC1155;
 using Nethereum.RPC.Eth.DTOs;
 using Newtonsoft.Json;
 using System.Net.Http;
 using Microsoft.Extensions.Configuration;
-using ERC721ContractLibrary.Contracts.MyERC1155.ContractDefinition;
+using ERC1155ContractLibrary.Contracts.MyERC1155.ContractDefinition;
 using Nethereum.Hex.HexTypes;
 using System.Numerics;
 using Nethereum.Contracts.Standards.ERC1155;

@@ -7,7 +7,7 @@ using System.Text;
 using Nethereum.XUnitEthereumClients;
 using Xunit;
 
-namespace ERC721ContractLibrary.Testing
+namespace ERC1155ContractLibrary.Testing
 {
     [CollectionDefinition(EthereumClientIntegrationFixture.ETHEREUM_CLIENT_COLLECTION_DEFAULT)]
     public class EthereumClientFixtureCollection : ICollectionFixture<EthereumClientIntegrationFixture>

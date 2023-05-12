@@ -6,8 +6,8 @@ using System.Net.Http;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
-using ERC721ContractLibrary.Contracts.MyERC1155;
-using ERC721ContractLibrary.Contracts.MyERC1155.ContractDefinition;
+using ERC1155ContractLibrary.Contracts.MyERC1155;
+using ERC1155ContractLibrary.Contracts.MyERC1155.ContractDefinition;
 using Nethereum.Contracts.Standards.ERC1155;
 using Nethereum.Contracts.Standards.ERC20.TokenList;
 using Nethereum.Hex.HexTypes;
@@ -20,7 +20,7 @@ using Newtonsoft.Json.Linq;
 using Xunit;
 using System.IO;
 
-namespace ERC721ContractLibrary.Testing
+namespace ERC1155ContractLibrary.Testing
 {
     [Collection(EthereumClientIntegrationFixture.ETHEREUM_CLIENT_COLLECTION_DEFAULT)]
     public class MyErc1155Test

@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Nethereum.Contracts.Standards.ERC721;
+using Nethereum.Contracts.Standards.ERC1155;
 using Nethereum.Web3;
 using Newtonsoft.Json;
 
-namespace ERC721ContractLibrary.Testing
+namespace ERC1155ContractLibrary.Testing
 {
     public class NFTIpfsService
     {

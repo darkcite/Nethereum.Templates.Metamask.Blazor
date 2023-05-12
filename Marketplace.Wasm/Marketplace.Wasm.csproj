@@ -49,7 +49,7 @@
     <Folder Include="wwwroot\css\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ERC721ContractLibrary\ERC721ContractLibrary.csproj">
+    <ProjectReference Include="..\ERC1155ContractLibrary\ERC1155ContractLibrary.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
   </ItemGroup>
