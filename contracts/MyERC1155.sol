@@ -7,10 +7,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply {
+contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply, ReentrancyGuard {
     
     mapping (uint256 => string) private _tokenURIs;
+    mapping (uint256 => address) public owners;
 
     struct TokenData {
         uint256 price;
@@ -21,10 +23,14 @@ contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply
     mapping(uint256 => TokenData) public tokenData;
 
     event TokenMinted(address indexed account, uint256 indexed tokenId, uint256 amount);
+    event TokenSold(uint256 indexed tokenId, address indexed seller, address indexed buyer, uint256 price);
 
     constructor() ERC1155("") {}
 
-    function setURI(string memory newuri) public onlyOwner {
+    function setURI(string memory newuri)
+        public
+        onlyOwner
+    {
         _setURI(newuri);
     }
 
@@ -32,16 +38,24 @@ contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply
         return(_tokenURIs[tokenId]); 
     }
 
-    function setTokenUri(uint256 tokenId, string memory tokenURI)  public
-        onlyOwner {
+    function setTokenUri(uint256 tokenId, string memory tokenURI)
+        public
+        onlyOwner
+    {
          _tokenURIs[tokenId] = tokenURI; 
     }  
 
-    function pause() public onlyOwner {
+    function pause()
+        public
+        onlyOwner
+    {
         _pause();
     }
 
-    function unpause() public onlyOwner {
+    function unpause()
+        public
+        onlyOwner
+    {
         _unpause();
     }
 
@@ -51,6 +65,7 @@ contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply
     {
         _mint(account, id, amount, data);
         tokenData[id] = TokenData(0, false, "");
+        owners[id] = account;
         emit TokenMinted(account, id, amount);
     }
 
@@ -59,9 +74,14 @@ contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply
         onlyOwner
     {
         _mintBatch(to, ids, amounts, data);
+        for (uint i = 0; i < ids.length; i++) {
+            owners[ids[i]] = to;
+        }
     }
 
-    function updateTokenForSale(uint256 id, uint256 newPrice, bool newStatus, string memory newContactInfo) public {
+    function updateTokenForSale(uint256 id, uint256 newPrice, bool newStatus, string memory newContactInfo)
+        public
+    {
         require(balanceOf(msg.sender, id) > 0, "ERC1155: operator query for nonexistent token");
         require(msg.sender == owner() || balanceOf(msg.sender, id) > 0, "Caller is not owner nor the token owner");
 
@@ -70,6 +90,19 @@ contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply
         tokenData[id].contactInfo = newContactInfo;
     }
 
+    function buyToken(uint256 tokenId) external payable nonReentrant {
+        require(tokenData[tokenId].forSale, "Token is not for sale");
+        require(msg.value >= tokenData[tokenId].price, "Insufficient Ether value sent");
+
+        address seller = owners[tokenId];
+        payable(seller).transfer(msg.value);
+                safeTransferFrom(seller, msg.sender, tokenId, 1, "");
+
+        tokenData[tokenId].forSale = false;
+        owners[tokenId] = msg.sender;
+
+        emit TokenSold(tokenId, seller, msg.sender, msg.value);
+    }
 
     function _beforeTokenTransfer(address operator, address from, address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
         internal
@@ -77,5 +110,24 @@ contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply
         override(ERC1155, ERC1155Supply)
     {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
+
+        if (from == address(0)) {
+            // Minting new tokens
+            for (uint i = 0; i < ids.length; i++) {
+                owners[ids[i]] = to;
+            }
+        } else if (to == address(0)) {
+            // Burning tokens
+            for (uint i = 0; i < ids.length; i++) {
+                owners[ids[i]] = address(0);
+            }
+        } else {
+            // Transferring tokens
+            for (uint i = 0; i < ids.length; i++) {
+                require(owners[ids[i]] == from, "Transfer: 'from' address does not own the token");
+                owners[ids[i]] = to;
+            }
+        }
     }
 }
+
