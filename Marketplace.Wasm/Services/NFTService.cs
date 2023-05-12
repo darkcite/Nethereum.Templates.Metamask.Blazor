@@ -24,6 +24,7 @@ namespace Marketplace.Wasm.Services
 
         private readonly string _contractAddress;
         private readonly HexBigInteger _deploymentBlockNumber;
+        private readonly Web3 _web3;
 
         private MyERC1155Service _erc1155Service;
 
@@ -33,13 +34,13 @@ namespace Marketplace.Wasm.Services
             _configuration = configuration;
             _metaMaskService = metaMaskService;
 
-            var web3 = _ethereumClientService.GetWeb3();
-            web3.Eth.TransactionManager.UseLegacyAsDefault = true;
+            _web3 = _ethereumClientService.GetWeb3();
+            _web3.Eth.TransactionManager.UseLegacyAsDefault = true;
 
             _contractAddress = _configuration.GetValue<string>("Ethereum:ContractAddress");
             _deploymentBlockNumber = new HexBigInteger(BigInteger.Parse(_configuration.GetValue<string>("Ethereum:DeploymentBlockNumber")));
 
-            _erc1155Service = new MyERC1155Service(web3, _contractAddress);
+            _erc1155Service = new MyERC1155Service(_web3, _contractAddress);
         }
 
         private async Task<List<NFT>> LoadNFTs(Func<TokenDataOutputDTO, bool> filter, string account = null, bool checkOwnership = false)
@@ -126,9 +127,15 @@ namespace Marketplace.Wasm.Services
             // Send the transaction through Metamask
             var approvalTxHash = await _metaMaskService.SendTransaction(_contractAddress, approvalData);
 
-            // TODO: Wait for the transaction to be mined and get the receipt, and check the receipt status
-            // if the transaction was not successful, throw an exception
-            // throw new Exception("Failed to approve contract as operator");
+            // Wait for the transaction to be mined and get the receipt
+            var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(approvalTxHash);
+
+            // Check the receipt status
+            if (receipt.Status.Value == 0)
+            {
+                // if the transaction was not successful, throw an exception
+                throw new Exception("Failed to approve transaction");
+            }
 
             // Prepare function call for updating token
             var updateFunctionMessage = new UpdateTokenForSaleFunction
@@ -148,7 +155,15 @@ namespace Marketplace.Wasm.Services
             // Send the transaction through Metamask
             var updateTxHash = await _metaMaskService.SendTransaction(_contractAddress, updateData);
 
-            // TODO: Wait for the transaction to be mined and get the receipt, and check the receipt status
+            // Wait for the transaction to be mined and get the receipt
+            var receipt2 = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(approvalTxHash);
+
+            // Check the receipt status
+            if (receipt2.Status.Value == 0)
+            {
+                // if the transaction was not successful, throw an exception
+                throw new Exception("Failed to update token");
+            }
         }
 
         public async Task BuyTokenAsync(BigInteger tokenId, BigInteger etherAmount)
@@ -169,9 +184,15 @@ namespace Marketplace.Wasm.Services
             // Send the transaction through Metamask
             var buyTokenTxHash = await _metaMaskService.SendTransaction(_contractAddress, buyTokenData, etherAmount);
 
-            // TODO: Wait for the transaction to be mined and get the receipt, and check the receipt status
-            // if the transaction was not successful, throw an exception
-            // throw new Exception("Failed to buy token");
+            // Wait for the transaction to be mined and get the receipt
+            var receipt = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(buyTokenTxHash);
+
+            // Check the receipt status
+            if (receipt.Status.Value == 0)
+            {
+                // if the transaction was not successful, throw an exception
+                throw new Exception("Failed to buy token");
+            }
         }
 
         public async Task<List<NFT>> GetAllTokensOwnedByAccountAsync(string account)
