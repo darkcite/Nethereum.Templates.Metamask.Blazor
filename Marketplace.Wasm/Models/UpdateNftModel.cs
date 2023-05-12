@@ -5,7 +5,7 @@ namespace Marketplace.Wasm.Models
 {
     public class UpdateNftModel
     {
-        public BigInteger Price { get; set; }
+        public decimal Price { get; set; } //Change this from BigInteger to decimal
         public bool ForSale { get; set; }
         public string ContactInfo { get; set; }
     }

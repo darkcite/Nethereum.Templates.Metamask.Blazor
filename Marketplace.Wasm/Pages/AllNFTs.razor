@@ -11,7 +11,7 @@
 @inject Services.NFTService NFTService
 
 <div class="container py-4">
-    <h2 class="py-2">Items Listed</h2>
+    <h2 class="py-2 text-center">Items Listed</h2>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
         @if (NFTs != null && NFTs.Count > 0)
         {
@@ -23,7 +23,7 @@
                             <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top rounded" alt="@nft.Name" />
                         </div>
                         <div class="card-body">
-                            @*<h5 class="card-title">@nft.Name</h5>*@
+                            @*<h5 class="card-title text-center">@nft.Name</h5>*@
                             <p class="card-text">@nft.Description</p>
                         </div>
                     </div>
@@ -33,11 +33,14 @@
         else
         {
             <div class="col">
-                <h1 class="py-10 text-3xl">No NFTs listed</h1>
+                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <h1 class="py-10 text-3xl">No NFTs listed</h1>
+                </div>
             </div>
         }
     </div>
 </div>
+
 
 @code {
     private List<NFT> NFTs { get; set; } = new();

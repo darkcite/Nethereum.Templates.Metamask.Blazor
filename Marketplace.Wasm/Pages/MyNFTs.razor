@@ -3,92 +3,73 @@
 @inject SelectedEthereumHostProviderService SelectedHostProviderService
 @using Marketplace.Wasm.Models
 @using System.Numerics;
+@using Nethereum.Web3
 @inject Services.NFTService NftService
 @inject IJSRuntime JsRuntime
 
 <AuthorizeView Roles="EthereumConnected">
     <Authorized Context="authContext">
         <div class="container py-4">
-            <div class="row mb-3">
-                <label class="col-sm-3 col-form-label-lg">Selected Account:</label>
-                <div class="col-sm-6">
-                    @SelectedAccount
-                    <small id="selectedAccountHelp" class="form-text text-muted">The selected account is bound to the host (ie Metamask) on change</small>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <h2>My NFTs:</h2>
-                    @if (myNfts == null)
+            <h2 class="py-2">Items Listed</h2>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                @if (NFTs != null && NFTs.Count > 0)
+                {
+                    @foreach (var nft in NFTs)
                     {
-                        <p>Loading...</p>
-                    }
-                    else
-                    {
-                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                            @foreach (var nft in myNfts)
-                            {
-                                <div class="col">
-                                    <div class="card h-100">
-                                        <div class="square-image">
-                                            <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top" alt="@nft.Name" />
-                                        </div>
-                                        <div class="card-body">
-                                            <h5 class="card-title">@nft.Name</h5>
-                                            <p class="card-text">TokenId: @nft.TokenId</p>
-                                            <p class="card-text">Price: @nft.Price</p>
-                                            <p class="card-text">
-                                                Listed for sale :
-                                                @if (nft.ForSale)
-                                                {
-                                                    <span><i class="fas fa-check-square"></i></span>
-                                                }
-                                                else
-                                                {
-                                                    <span><i class="far fa-square"></i></span>
-                                                }
-                                            </p>
-                                            <p class="card-text">Contact Info: @nft.ContactInfo</p>
-                                        </div>
-                                        <div class="card-footer">
-                                            <button class="btn btn-primary" @onclick="() => OpenModal(nft.TokenId)">Update NFT</button>
-                                        </div>
+                        <div class="col">
+                            <div class="card h-100 shadow rounded hover-shadow">
+                                <div class="square-image">
+                                    <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top rounded" alt="@nft.Name" />
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">@nft.Name</h5>
+                                    <p class="card-text text-truncate">@nft.Description</p>
+                                </div>
+                                <div class="card-footer bg-dark d-flex justify-content-between align-items-center">
+                                    <h5 class="text-white mb-0">@Web3.Convert.FromWei(nft.Price).ToString("F8") ETH</h5>
+                                    <button class="btn btn-primary" @onclick="() => OpenModal(nft)">Details</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- The Modal -->
+                        <div class="modal" tabindex="-1" id="@($"modal{nft.TokenId.ToString()}")">
+                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">@nft.Name</h5>
+                                        <button type="button" class="btn-close" @onclick="() => CloseModal(nft.TokenId)"></button>
                                     </div>
-                                    <!-- The Modal -->
-                                    <div class="modal" tabindex="-1" id="@($"modal{nft.TokenId.ToString()}")">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Update NFT</h5>
-                                                    <button type="button" class="btn-close" @onclick="() => CloseModal(nft.TokenId)"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <EditForm Model="@UpdateNftModel" OnValidSubmit="() => UpdateNFT(nft.TokenId)">
-                                                        <DataAnnotationsValidator />
-                                                        <ValidationSummary />
-
-                                                        <div class="form-group mb-3">
-                                                            <BigIntegerInput @bind-Value="@UpdateNftModel.Price" id="price" placeholder="New price" class="form-control" />
-                                                        </div>
-                                                        <div class="form-group mb-3">
-                                                            <InputCheckbox id="forSale" @bind-Value="@UpdateNftModel.ForSale" /> For sale
-                                                        </div>
-                                                        <div class="form-group mb-3">
-                                                            <InputText id="contactInfo" @bind-Value="@UpdateNftModel.ContactInfo" placeholder="New contact info" class="form-control" />
-                                                        </div>
-                                                        <button type="submit" class="btn btn-primary">Update</button>
-                                                    </EditForm>
-                                                </div>
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <img src="@ConvertIpfsToHttp(nft.Image)" class="img-fluid rounded" alt="@nft.Name" />
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong>TokenId:</strong> @nft.TokenId</p>
+                                                <p><strong>Price:</strong> @Web3.Convert.FromWei(nft.Price).ToString("F8") ETH</p>
+                                                <p><strong>Seller:</strong> @nft.Seller</p>
+                                                <p><strong>Owner:</strong> @nft.Owner</p>
+                                                <p><strong>Description:</strong> @nft.Description</p>
+                                                <p><strong>Token URI:</strong> @nft.TokenURI</p>
+                                                <p><strong>For Sale:</strong> @(nft.ForSale ? "Yes" : "No")</p>
+                                                <p><strong>Contact Info:</strong> @nft.ContactInfo</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            }
+                            </div>
                         </div>
                     }
-                </div>
+                }
+                else
+                {
+                    <div class="col">
+                        <h1 class="py-10 text-3xl">No NFTs listed</h1>
+                    </div>
+                }
             </div>
         </div>
+
     </Authorized>
     <NotAuthorized>
         <div>
@@ -149,7 +130,8 @@
 
     private async Task UpdateNFT(BigInteger tokenId)
     {
-        await NftService.UpdateNFTDetailsAsync(tokenId, UpdateNftModel.Price, UpdateNftModel.ForSale, UpdateNftModel.ContactInfo);
+        BigInteger priceInWei = Web3.Convert.ToWei(UpdateNftModel.Price);
+        await NftService.UpdateNFTDetailsAsync(tokenId, priceInWei, UpdateNftModel.ForSale, UpdateNftModel.ContactInfo);
         await LoadMyNfts(); // to refresh the data
         CloseModal(tokenId);
     }
@@ -157,9 +139,11 @@
 
     private void OpenModal(BigInteger tokenId)
     {
+        decimal priceInEther = Web3.Convert.FromWei(myNfts.FirstOrDefault(n => n.TokenId == tokenId).Price);
+
         UpdateNftModel = new UpdateNftModel
         {
-            Price = myNfts.FirstOrDefault(n => n.TokenId == tokenId).Price,
+            Price = priceInEther,
             ForSale = myNfts.FirstOrDefault(n => n.TokenId == tokenId).ForSale,
             ContactInfo = myNfts.FirstOrDefault(n => n.TokenId == tokenId).ContactInfo
         };
@@ -171,16 +155,4 @@
     {
         JsRuntime.InvokeVoidAsync("window.closeModal", $"modal{tokenId.ToString()}");
     }
-    //private void OpenModal()
-    //{
-    //    JsRuntime.InvokeVoidAsync("window.openModal", "myModal");
-    //}
-
-    //private void CloseModal()
-    //{
-    //    JsRuntime.InvokeVoidAsync("window.closeModal", "myModal");
-    //}
-
-
-
 }
