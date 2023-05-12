@@ -42,13 +42,13 @@ namespace ERC721ContractLibrary.Testing
 
             var appsettingstest = JObject.Parse(File.ReadAllText(appsettingsTestJsonPath));
 
-            try
-            {
-                _contractId = appsettingstest["ContractAddress"].Value<string>();
-                _deploymentBlockNumber = appsettingstest["DeploymentBlockNumber"].Value<HexBigInteger>();
-            }
-            catch
-            { }
+            //try
+            //{
+            _contractId = appsettingstest["ContractAddress"].Value<string>();
+            _deploymentBlockNumber = new HexBigInteger(BigInteger.Parse(appsettingstest["DeploymentBlockNumber"].Value<string>()));
+            //}
+            //catch
+            //{ }
         }
     
         [Fact]
@@ -74,7 +74,7 @@ namespace ERC721ContractLibrary.Testing
             var erc1155Service = new MyERC1155Service(web3, deploymentReceipt.ContractAddress);
             var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: infU, password: infP);
 
-            var addressToRegisterOwnership = "0xDb4E01606dA99EBC8d2fF7a971Af8f777ee99E87";
+            var addressToRegisterOwnership = "0x3C3D1822Fff0DdcB26A8C7FdD17472834bd5855E";
 
             string[] files = Directory.GetFiles("ShopImages/");
 
@@ -193,7 +193,7 @@ namespace ERC721ContractLibrary.Testing
             var metadataIpfs =
                 await nftIpfsService.AddNftsMetadataToIpfsAsync(metadataNFT, metadataNFT.ProductId + ".json");
 
-            var addressToRegisterOwnership = "0x838B8e10A07007b3e8a86EDf781d04fF48f985bB";
+            var addressToRegisterOwnership = "0x3C3D1822Fff0DdcB26A8C7FdD17472834bd5855E";
             //Adding the product information
             var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(metadataNFT.ProductId,
                  "ipfs://" + metadataIpfs.Hash);

@@ -37,7 +37,7 @@ namespace Marketplace.Wasm.Services
             web3.Eth.TransactionManager.UseLegacyAsDefault = true;
 
             _contractAddress = _configuration.GetValue<string>("Ethereum:ContractAddress");
-            _deploymentBlockNumber = _configuration.GetValue<HexBigInteger>("Ethereum:DeploymentBlockNumber");
+            _deploymentBlockNumber = new HexBigInteger(BigInteger.Parse(_configuration.GetValue<string>("Ethereum:DeploymentBlockNumber")));
 
             _erc1155Service = new MyERC1155Service(web3, _contractAddress);
         }
