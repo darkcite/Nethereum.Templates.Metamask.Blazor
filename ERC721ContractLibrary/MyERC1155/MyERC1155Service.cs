@@ -553,6 +553,12 @@ namespace ERC721ContractLibrary.Contracts.MyERC1155
             return await ContractHandler.SendRequestAndWaitForReceiptAsync(updateTokenForSaleFunction, cancellationToken);
         }
 
+        /** Function: buyToken**/
+        /*
+        var buyTokenFunction = new BuyTokenFunction();
+        buyTokenFunction.TokenId = tokenId;
+        var buyTokenFunctionTxnReceipt = await contractHandler.SendRequestAndWaitForReceiptAsync(buyTokenFunction);
+        */
 
     }
 }
