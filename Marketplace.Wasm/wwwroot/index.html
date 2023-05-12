@@ -62,6 +62,31 @@
             const txHash = await ethereum.request({ method: 'eth_sendTransaction', params: params });
             return txHash;
         };</script>
+    <script>window.sendTransactionWithValue = async (to, data, value) => {
+            const ethereum = window.ethereum;
+
+            try {
+                const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+                const account = accounts[0];
+
+                const parameters = {
+                    from: account,
+                    to: to,
+                    data: data,
+                    value: value,
+                };
+
+                const txHash = await ethereum.request({
+                    method: 'eth_sendTransaction',
+                    params: [parameters],
+                });
+
+                return txHash;
+            } catch (error) {
+                console.error(error);
+            }
+        };
+    </script>
 </body>
 
 </html>

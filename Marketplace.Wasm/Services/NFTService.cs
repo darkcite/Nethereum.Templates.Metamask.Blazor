@@ -151,7 +151,7 @@ namespace Marketplace.Wasm.Services
         {
             // Get the function for BuyToken
             var buyTokenFunction = _erc1155Service.ContractHandler.GetFunction<BuyTokenFunction>();
-
+            
             // Prepare the function call
             var buyTokenFunctionMessage = new BuyTokenFunction
             {
@@ -163,7 +163,7 @@ namespace Marketplace.Wasm.Services
             var buyTokenData = buyTokenFunction.GetData(buyTokenFunctionMessage);
 
             // Send the transaction through Metamask
-            var buyTokenTxHash = await _metaMaskService.SendTransaction(_contractAddress, buyTokenData);
+            var buyTokenTxHash = await _metaMaskService.SendTransaction(_contractAddress, buyTokenData, etherAmount);
 
             // TODO: Wait for the transaction to be mined and get the receipt, and check the receipt status
             // if the transaction was not successful, throw an exception
