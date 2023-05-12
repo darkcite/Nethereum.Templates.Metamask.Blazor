@@ -48,7 +48,7 @@
 
     private async Task BuyNFT(NFT nft)
     {
-        // Add your logic to buy NFT
+        await NFTService.BuyTokenAsync(nft.TokenId, nft.Price);
     }
 
     private string ConvertIpfsToHttp(string ipfsUrl)

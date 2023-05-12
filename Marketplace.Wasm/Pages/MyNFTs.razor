@@ -139,7 +139,7 @@
 
     private async Task LoadMyNfts()
     {
-        myNfts = await NftService.LoadNFTsOwnedByAccount(SelectedAccount);
+        myNfts = await NftService.GetAllTokensOwnedByAccountAsync(SelectedAccount);
     }
 
     private string ConvertIpfsToHttp(string ipfsUrl)

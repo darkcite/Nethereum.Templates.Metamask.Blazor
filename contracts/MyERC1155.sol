@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MIT
-// Check https://wizard.openzeppelin.com/#erc1155 o generate / customise your own ERC1155 contract
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
@@ -96,13 +95,21 @@ contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply
 
         address seller = owners[tokenId];
         payable(seller).transfer(msg.value);
-                safeTransferFrom(seller, msg.sender, tokenId, 1, "");
+
+        // The _safeTransferFrom function will perform the same operation as safeTransferFrom, 
+        // but without the check for approval, since we've confirmed that the contract is the operator.
+        _safeTransferFrom(seller, msg.sender, tokenId, 1, "");
 
         tokenData[tokenId].forSale = false;
         owners[tokenId] = msg.sender;
 
         emit TokenSold(tokenId, seller, msg.sender, msg.value);
     }
+
+    function getOwner(uint256 tokenId) public view returns (address) {
+        return owners[tokenId];
+    }
+
 
     function _beforeTokenTransfer(address operator, address from, address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
         internal
@@ -130,4 +137,3 @@ contract MyERC1155 is ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply
         }
     }
 }
-

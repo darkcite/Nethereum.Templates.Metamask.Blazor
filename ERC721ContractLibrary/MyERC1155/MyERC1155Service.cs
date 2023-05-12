@@ -525,6 +525,11 @@ namespace ERC721ContractLibrary.Contracts.MyERC1155
             return ContractHandler.QueryAsync<UriFunction, string>(uriFunction, blockParameter);
         }
 
+        public Event<TokenSoldEventDTO> GetTokenSoldEvent()
+        {
+            return ContractHandler.GetEvent<TokenSoldEventDTO>();
+        }
+
         public Event<TokenMintedEventDTO> GetTokenMintedEvent()
         {
             return ContractHandler.GetEvent<TokenMintedEventDTO>();
@@ -553,12 +558,23 @@ namespace ERC721ContractLibrary.Contracts.MyERC1155
             return await ContractHandler.SendRequestAndWaitForReceiptAsync(updateTokenForSaleFunction, cancellationToken);
         }
 
-        /** Function: buyToken**/
-        /*
-        var buyTokenFunction = new BuyTokenFunction();
-        buyTokenFunction.TokenId = tokenId;
-        var buyTokenFunctionTxnReceipt = await contractHandler.SendRequestAndWaitForReceiptAsync(buyTokenFunction);
-        */
+
+        public async Task<string> BuyTokenAsync(BigInteger tokenId, BigInteger etherAmount)
+        {
+            var buyTokenFunction = new BuyTokenFunction
+            {
+                TokenId = tokenId,
+                AmountToSend = etherAmount
+            };
+
+            return await ContractHandler.SendRequestAsync(buyTokenFunction);
+        }
+
+        public async Task<string> GetOwnerOfTokenAsync(BigInteger tokenId)
+        {
+            var getOwnerFunction = new GetOwnerFunction() { TokenId = tokenId };
+            return await ContractHandler.QueryAsync<GetOwnerFunction, string>(getOwnerFunction);
+        }
 
     }
 }
