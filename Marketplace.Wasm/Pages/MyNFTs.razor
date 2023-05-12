@@ -10,66 +10,96 @@
 <AuthorizeView Roles="EthereumConnected">
     <Authorized Context="authContext">
         <div class="container py-4">
-            <h2 class="py-2">Items Listed</h2>
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-                @if (NFTs != null && NFTs.Count > 0)
-                {
-                    @foreach (var nft in NFTs)
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label-lg">Selected Account:</label>
+                <div class="col-sm-6">
+                    @SelectedAccount
+                    <small id="selectedAccountHelp" class="form-text text-muted">The selected account is bound to the host (ie Metamask) on change</small>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <h2>My NFTs:</h2>
+                    @if (myNfts == null)
                     {
-                        <div class="col">
-                            <div class="card h-100 shadow rounded hover-shadow">
+                        <p>Loading...</p>
+                    }
+                    else
+                    {
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                    @foreach (var nft in myNfts)
+                    {
+                        <div class="col mb-4">
+                            <div class="card shadow h-100">
                                 <div class="square-image">
-                                    <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top rounded" alt="@nft.Name" />
+                                    <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top" alt="@nft.Name" />
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title">@nft.Name</h5>
-                                    <p class="card-text text-truncate">@nft.Description</p>
+                                    <p class="card-text">
+                                        <strong>TokenId:</strong> @nft.TokenId
+                                    </p>
+                                    <p class="card-text">
+                                        <strong>Price:</strong> @Web3.Convert.FromWei(nft.Price).ToString("F8") ETH
+                                    </p>
+                                    <p class="card-text">
+                                        <strong>Listed for sale:</strong>
+                                        @if (nft.ForSale)
+                                        {
+                                            <span><i class="fas fa-check-square text-success"></i></span>
+                                        }
+                                        else
+                                        {
+                                            <span><i class="far fa-square text-danger"></i></span>
+                                        }
+                                    </p>
+                                    <p class="card-text">
+                                        <strong>Contact Info:</strong> @nft.ContactInfo
+                                    </p>
                                 </div>
-                                <div class="card-footer bg-dark d-flex justify-content-between align-items-center">
-                                    <h5 class="text-white mb-0">@Web3.Convert.FromWei(nft.Price).ToString("F8") ETH</h5>
-                                    <button class="btn btn-primary" @onclick="() => OpenModal(nft)">Details</button>
+                                <div class="card-footer">
+                                    <button class="btn btn-primary" @onclick="() => OpenModal(nft.TokenId)">Update NFT</button>
                                 </div>
                             </div>
-                        </div>
-                        <!-- The Modal -->
-                        <div class="modal" tabindex="-1" id="@($"modal{nft.TokenId.ToString()}")">
-                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">@nft.Name</h5>
-                                        <button type="button" class="btn-close" @onclick="() => CloseModal(nft.TokenId)"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <img src="@ConvertIpfsToHttp(nft.Image)" class="img-fluid rounded" alt="@nft.Name" />
-                                            </div>
-                                            <div class="col-md-6">
-                                                <p><strong>TokenId:</strong> @nft.TokenId</p>
-                                                <p><strong>Price:</strong> @Web3.Convert.FromWei(nft.Price).ToString("F8") ETH</p>
-                                                <p><strong>Seller:</strong> @nft.Seller</p>
-                                                <p><strong>Owner:</strong> @nft.Owner</p>
-                                                <p><strong>Description:</strong> @nft.Description</p>
-                                                <p><strong>Token URI:</strong> @nft.TokenURI</p>
-                                                <p><strong>For Sale:</strong> @(nft.ForSale ? "Yes" : "No")</p>
-                                                <p><strong>Contact Info:</strong> @nft.ContactInfo</p>
-                                            </div>
+                            <!-- The Modal -->
+                            <div class="modal fade" id="@($"modal{nft.TokenId.ToString()}")" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Update NFT</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" @onclick="() => CloseModal(nft.TokenId)"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <EditForm Model="@UpdateNftModel" OnValidSubmit="() => UpdateNFT(nft.TokenId)">
+                                                <DataAnnotationsValidator />
+                                                <ValidationSummary />
+
+                                                <div class="mb-3">
+                                                    <label for="price" class="form-label">New price</label>
+                                                    <InputNumber @bind-Value="@UpdateNftModel.Price" id="price" class="form-control" />
+                                                </div>
+                                                <div class="mb-3 form-check">
+                                                    <InputCheckbox id="forSale" @bind-Value="@UpdateNftModel.ForSale" class="form-check-input" />
+                                                    <label class="form-check-label" for="forSale">For sale</label>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="contactInfo" class="form-label">New contact info</label>
+                                                    <InputText id="contactInfo" @bind-Value="@UpdateNftModel.ContactInfo" class="form-control" />
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Update</button>
+                                            </EditForm>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     }
-                }
-                else
-                {
-                    <div class="col">
-                        <h1 class="py-10 text-3xl">No NFTs listed</h1>
-                    </div>
-                }
+
+                </div>
+                    }
+                </div>
             </div>
         </div>
-
     </Authorized>
     <NotAuthorized>
         <div>
