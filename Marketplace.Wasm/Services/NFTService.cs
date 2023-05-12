@@ -22,7 +22,9 @@ namespace Marketplace.Wasm.Services
         private readonly IConfiguration _configuration;
         private MetaMaskService _metaMaskService;
 
-        private string _contractAddress;
+        private readonly string _contractAddress;
+        private readonly HexBigInteger _deploymentBlockNumber;
+
         private MyERC1155Service _erc1155Service;
 
         public NFTService(EthereumClientService ethereumClientService, IConfiguration configuration, MetaMaskService metaMaskService)
@@ -35,6 +37,8 @@ namespace Marketplace.Wasm.Services
             web3.Eth.TransactionManager.UseLegacyAsDefault = true;
 
             _contractAddress = _configuration.GetValue<string>("Ethereum:ContractAddress");
+            _deploymentBlockNumber = _configuration.GetValue<HexBigInteger>("Ethereum:DeploymentBlockNumber");
+
             _erc1155Service = new MyERC1155Service(web3, _contractAddress);
         }
 
@@ -46,7 +50,7 @@ namespace Marketplace.Wasm.Services
             web3.Eth.TransactionManager.UseLegacyAsDefault = true;
 
             var filterInput = _erc1155Service.GetTokenMintedEvent().CreateFilterInput(
-                new BlockParameter(new HexBigInteger(0)),
+                new BlockParameter(_deploymentBlockNumber),
                 BlockParameter.CreateLatest());
             var eventLogs = await web3.Eth.Filters.GetLogs.SendRequestAsync(filterInput);
 
@@ -179,7 +183,7 @@ namespace Marketplace.Wasm.Services
             web3.Eth.TransactionManager.UseLegacyAsDefault = true;
 
             var filterInput = _erc1155Service.GetTokenMintedEvent().CreateFilterInput(
-                new BlockParameter(new HexBigInteger(0)),
+                new BlockParameter(_deploymentBlockNumber),
                 BlockParameter.CreateLatest());
             var eventLogs = await web3.Eth.Filters.GetLogs.SendRequestAsync(filterInput);
 
