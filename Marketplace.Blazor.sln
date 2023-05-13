@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		contracts\MyERC1155.sol = contracts\MyERC1155.sol
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERC1155ContractLibraryN7.Testing", "ERC1155ContractLibraryN7.Testing\ERC1155ContractLibraryN7.Testing.csproj", "{3924CE3F-CB6C-4424-9190-E51BD43737B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERC1155ContractLibraryN7.Testing", "ERC1155ContractLibraryN7.Testing\ERC1155ContractLibraryN7.Testing.csproj", "{A2579D03-8F3B-41E2-B795-1FA1E4030B1A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,10 +38,10 @@ Global
 		{B70D0283-7A4B-405E-94E8-A18C50D49295}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B70D0283-7A4B-405E-94E8-A18C50D49295}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B70D0283-7A4B-405E-94E8-A18C50D49295}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3924CE3F-CB6C-4424-9190-E51BD43737B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3924CE3F-CB6C-4424-9190-E51BD43737B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3924CE3F-CB6C-4424-9190-E51BD43737B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3924CE3F-CB6C-4424-9190-E51BD43737B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2579D03-8F3B-41E2-B795-1FA1E4030B1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2579D03-8F3B-41E2-B795-1FA1E4030B1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2579D03-8F3B-41E2-B795-1FA1E4030B1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2579D03-8F3B-41E2-B795-1FA1E4030B1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
