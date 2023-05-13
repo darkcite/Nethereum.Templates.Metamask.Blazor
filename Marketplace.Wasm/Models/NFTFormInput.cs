@@ -1,5 +1,4 @@
-﻿using System;
-namespace Marketplace.Wasm.Models
+﻿namespace Marketplace.Wasm.Models
 {
 	public class NFTFormInput
 	{

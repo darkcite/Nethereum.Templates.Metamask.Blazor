@@ -10,8 +10,6 @@ using Microsoft.Extensions.Configuration;
 using ERC1155ContractLibrary.Contracts.MyERC1155.ContractDefinition;
 using Nethereum.Hex.HexTypes;
 using System.Numerics;
-using Nethereum.Contracts.Standards.ERC1155;
-using Nethereum.Contracts.Standards.ERC20.TokenList;
 using Nethereum.Web3;
 
 namespace Marketplace.Wasm.Services
@@ -142,7 +140,7 @@ namespace Marketplace.Wasm.Services
 
             var updateTxHash = await _metaMaskService.SendTransaction(_contractAddress, updateData);
 
-            var receipt2 = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(approvalTxHash);
+            var receipt2 = await _web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(updateTxHash);
 
             if (receipt2.Status.Value == 0)
             {

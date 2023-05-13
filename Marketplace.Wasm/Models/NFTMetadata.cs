@@ -1,5 +1,4 @@
-﻿using System;
-using Nethereum.Contracts.Standards.ERC1155;
+﻿using Nethereum.Contracts.Standards.ERC1155;
 
 namespace Marketplace.Wasm.Models
 {

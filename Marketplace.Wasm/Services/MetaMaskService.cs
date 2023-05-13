@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.JSInterop;
+﻿using Microsoft.JSInterop;
 using System.Threading.Tasks;
 using System.Numerics;
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 namespace Marketplace.Wasm.Models
 {
     public class NFT
