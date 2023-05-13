@@ -12,11 +12,11 @@
                 <div class="col">
                     <div class="card h-100 shadow rounded">
                         <div class="square-image">
-                            <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top rounded" alt="@nft.Name" />
+                            <img src="@ConvertIpfsToHttp(nft.TokenMetadata.Image)" class="card-img-top rounded" alt="@nft.TokenMetadata.Name" />
                         </div>
                         <div class="card-body">
                             @*<h5 class="card-title text-center">@nft.Name</h5>*@
-                            <p class="card-text">@nft.Description</p>
+                            <p class="card-text">@nft.TokenMetadata.Description</p>
                         </div>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
 
 
 @code {
-    private List<NFT> NFTs { get; set; } = new();
+    private List<NFTViewModel> NFTs { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {

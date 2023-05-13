@@ -39,9 +39,9 @@ namespace Marketplace.Wasm.Services
             _erc1155Service = new MyERC1155Service(_web3, _contractAddress);
         }
 
-        private async Task<List<NFT>> LoadNFTs(Func<TokenDataOutputDTO, bool> filter, string account = null, bool checkOwnership = false)
+        private async Task<List<NFTViewModel>> LoadNFTs(Func<TokenDataOutputDTO, bool> filter, string account = null, bool checkOwnership = false)
         {
-            List<NFT> NFTs = new List<NFT>();
+            List<NFTViewModel> NFTs = new List<NFTViewModel>();
             var filterInput = _erc1155Service.GetTokenMintedEvent().CreateFilterInput(
                 new BlockParameter(_deploymentBlockNumber),
                 BlockParameter.CreateLatest());
@@ -53,14 +53,12 @@ namespace Marketplace.Wasm.Services
                 var (tokenData, metadata) = await GetTokenData(log.Event.TokenId).ConfigureAwait(false);
                 if (tokenData != null && metadata != null && filter(tokenData) && (!checkOwnership || await IsTokenOwnedByAccount(account, log.Event.TokenId)))
                 {
-                    NFTs.Add(new NFT
-                    {
-                        Image = metadata.Image,
-                        Description = metadata.Description,
-                        Name = metadata.Name,
-                        TokenId = metadata.ProductId,
+                    NFTs.Add(new NFTViewModel
+                    {                        
+                        TokenId = log.Event.TokenId,
                         Price = tokenData.Price,
-                        ForSale = tokenData.ForSale
+                        ForSale = tokenData.ForSale,
+                        TokenMetadata = metadata
                     });
                 }
             }
@@ -68,7 +66,7 @@ namespace Marketplace.Wasm.Services
             return NFTs;
         }
 
-        private async Task<(TokenDataOutputDTO, NFTMetadata)> GetTokenData(BigInteger tokenId)
+        private async Task<(TokenDataOutputDTO, TokenMetadata)> GetTokenData(BigInteger tokenId)
         {
             string tokenUri = await _erc1155Service.UriQueryAsync(tokenId).ConfigureAwait(false);
             var metadata = await GetMetadataFromUri(tokenUri).ConfigureAwait(false);
@@ -76,7 +74,7 @@ namespace Marketplace.Wasm.Services
             return (tokenData, metadata);
         }
 
-        private async Task<NFTMetadata> GetMetadataFromUri(string tokenUri)
+        private async Task<TokenMetadata> GetMetadataFromUri(string tokenUri)
         {
             var ipfsGatewayUrl = _configuration.GetValue<string>("IPFS:GatewayUrl");
             string httpGatewayUrl = tokenUri.Replace("ipfs://", ipfsGatewayUrl);
@@ -90,7 +88,7 @@ namespace Marketplace.Wasm.Services
             }
 
             string metadataJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            return JsonConvert.DeserializeObject<NFTMetadata>(metadataJson);
+            return JsonConvert.DeserializeObject<TokenMetadata>(metadataJson);
         }
 
         // Сheck if the current owner of the token is the provided account
@@ -100,11 +98,11 @@ namespace Marketplace.Wasm.Services
             return account != null && currentOwner == account;
         }
 
-        public Task<List<NFT>> LoadAllNFTs(string account = null) => LoadNFTs(_ => true, account, false);
+        public Task<List<NFTViewModel>> LoadAllNFTs(string account = null) => LoadNFTs(_ => true, account, false);
 
-        public Task<List<NFT>> LoadNFTsForSale(string account = null) => LoadNFTs(tokenData => tokenData.ForSale, account, false);
+        public Task<List<NFTViewModel>> LoadNFTsForSale(string account = null) => LoadNFTs(tokenData => tokenData.ForSale, account, false);
 
-        public Task<List<NFT>> LoadNFTsOwnedByAccount(string account) => LoadNFTs(_ => true, account, true);
+        public Task<List<NFTViewModel>> LoadNFTsOwnedByAccount(string account) => LoadNFTs(_ => true, account, true);
 
         public async Task UpdateNFTDetailsAsync(BigInteger tokenId, BigInteger newPrice, bool newStatus)
         {
@@ -175,9 +173,9 @@ namespace Marketplace.Wasm.Services
             }
         }
 
-        public async Task<List<NFT>> GetAllTokensOwnedByAccountAsync(string account)
+        public async Task<List<NFTViewModel>> GetAllTokensOwnedByAccountAsync(string account)
         {
-            var NFTs = new List<NFT>();
+            var NFTs = new List<NFTViewModel>();
             var filterInput = _erc1155Service.GetTokenMintedEvent().CreateFilterInput(
                 new BlockParameter(_deploymentBlockNumber),
                 BlockParameter.CreateLatest());
@@ -193,14 +191,12 @@ namespace Marketplace.Wasm.Services
                     var balance = await _erc1155Service.BalanceOfQueryAsync(account, log.Event.TokenId).ConfigureAwait(false);
                     if (balance > 0)
                     {
-                        NFTs.Add(new NFT
+                        NFTs.Add(new NFTViewModel
                         {
-                            Image = metadata.Image,
-                            Description = metadata.Description,
-                            Name = metadata.Name,
-                            TokenId = metadata.ProductId,
+                            TokenId = log.Event.TokenId,
                             Price = tokenData.Price,
-                            ForSale = tokenData.ForSale
+                            ForSale = tokenData.ForSale,
+                            TokenMetadata = metadata
                         });
                     }
                 }

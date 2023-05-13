@@ -12,15 +12,19 @@
                 <div class="col mb-4">
                     <div class="card h-100 shadow rounded">
                         <div class="square-image">
-                            <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top rounded" alt="@nft.Name" />
+                            <img src="@ConvertIpfsToHttp(nft.TokenMetadata.Image)" class="card-img-top rounded" alt="@nft.TokenMetadata.Name" />
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title text-center">@nft.Name</h5>
-                            <p class="card-text text-truncate">@nft.Description</p>
+                            <h5 class="card-title text-center">@nft.TokenMetadata.Name</h5>
+                            <p class="card-text text-truncate">@nft.TokenMetadata.Description</p>
                         </div>
                         <div class="card-footer bg-dark d-flex justify-content-between align-items-center">
                             <h5 class="text-white mb-0">@Web3.Convert.FromWei(nft.Price).ToString("F8") ETH</h5>
-                            <button class="btn btn-primary" @onclick="() => BuyNFT(nft)">Buy</button>
+                            <AuthorizeView Roles="EthereumConnected">
+                                <Authorized Context="authContext">
+                                    <button class="btn btn-primary" @onclick="() => BuyNFT(nft)">Buy</button>
+                                </Authorized>
+                            </AuthorizeView>
                         </div>
                     </div>
                 </div>
@@ -36,14 +40,14 @@
 </div>
 
 @code {
-    private List<NFT> NFTs { get; set; } = new();
+    private List<NFTViewModel> NFTs { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         NFTs = await NFTService.LoadNFTsForSale();
     }
 
-    private async Task BuyNFT(NFT nft)
+    private async Task BuyNFT(NFTViewModel nft)
     {
         await NFTService.BuyTokenAsync(nft.TokenId, nft.Price);
         NFTs = await NFTService.LoadNFTsForSale();

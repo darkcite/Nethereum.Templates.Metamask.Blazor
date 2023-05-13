@@ -68,25 +68,36 @@ public class MyErc1155Test
             var file = files[i];
             var imageIpfs = await nftIpfsService.AddFileToIpfsAsync(file);
 
-            var metadataNFT = new ProductNFTMetadata()
+            //var metadataNFT = new ProductNFTMetadata()
+            //{
+            //    ProductId = i, // Using index as ProductId
+            //    Name = Path.GetFileNameWithoutExtension(file),
+            //    Image = "ipfs://" + imageIpfs.Hash,
+            //    Description = $"Gem {i} - {Path.GetFileNameWithoutExtension(file)}", // Using index and file name as Description
+            //    ExternalUrl = "",
+            //    Decimals = 0
+            //};
+            var userDefinedTokenId = i;
+
+            var tokenMetadata = new TokenMetadata()
             {
-                ProductId = i, // Using index as ProductId
-                Name = Path.GetFileNameWithoutExtension(file),
-                Image = "ipfs://" + imageIpfs.Hash,
-                Description = $"Gem {i} - {Path.GetFileNameWithoutExtension(file)}", // Using index and file name as Description
+                Name = "",
+                Image = "",
+                Description = "",
                 ExternalUrl = "",
-                Decimals = 0
+
             };
 
+
             var howManyTokensOfThisTypeToMint = 1;
-            var metadataIpfs = await nftIpfsService.AddNftsMetadataToIpfsAsync(metadataNFT, metadataNFT.ProductId + ".json");
+            var metadataIpfs = await nftIpfsService.AddNftsMetadataToIpfsAsync(tokenMetadata, userDefinedTokenId + ".json");
 
-            var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(metadataNFT.ProductId, "ipfs://" + metadataIpfs.Hash);
-            var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, metadataNFT.ProductId, howManyTokensOfThisTypeToMint, new byte[] { });
+            var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(userDefinedTokenId, "ipfs://" + metadataIpfs.Hash);
+            var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, userDefinedTokenId, howManyTokensOfThisTypeToMint, new byte[] { });
 
-            var balance = await erc1155Service.BalanceOfQueryAsync(addressToRegisterOwnership, (BigInteger)metadataNFT.ProductId);
+            var balance = await erc1155Service.BalanceOfQueryAsync(addressToRegisterOwnership, (BigInteger)userDefinedTokenId);
             Assert.Equal(howManyTokensOfThisTypeToMint, balance);
-            var addressOfToken = await erc1155Service.UriQueryAsync(metadataNFT.ProductId);
+            var addressOfToken = await erc1155Service.UriQueryAsync(userDefinedTokenId);
             Assert.Equal("ipfs://" + metadataIpfs.Hash, addressOfToken);
         }
     }
@@ -164,26 +175,27 @@ public class MyErc1155Test
         var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/1.gif");
 
         //adding all our document ipfs links to the metadata and the description
-        var metadataNFT = new ProductNFTMetadata()
+        var userDefinedTokenId = 666;
+
+        var tokenMetadata = new TokenMetadata()
         {
-            ProductId = 222,
-            Name = "Gem 2",
-            Image = "ipfs://" + imageIpfs.Hash, //The image is what is displayed in market places like opean sea
-            Description = @"7 CT",
+            Name = "",
+            Image = "",
+            Description = "",
             ExternalUrl = "",
-            Decimals = 0
+
         };
         var howManyTokensOfThisTypeToMint = 1;
         //Adding the metadata to ipfs
         var metadataIpfs =
-            await nftIpfsService.AddNftsMetadataToIpfsAsync(metadataNFT, metadataNFT.ProductId + ".json");
+            await nftIpfsService.AddNftsMetadataToIpfsAsync(tokenMetadata, userDefinedTokenId + ".json");
 
         var addressToRegisterOwnership = "0x3C3D1822Fff0DdcB26A8C7FdD17472834bd5855E";
         //Adding the product information
-        var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(metadataNFT.ProductId,
+        var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(userDefinedTokenId,
              "ipfs://" + metadataIpfs.Hash);
 
-        var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, metadataNFT.ProductId, howManyTokensOfThisTypeToMint, new byte[] { });
+        var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, userDefinedTokenId, howManyTokensOfThisTypeToMint, new byte[] { });
     }
 
     [Fact]
@@ -227,9 +239,9 @@ public class MyErc1155Test
     }
 
 
-    public class ProductNFTMetadata : NFT1155Metadata
-    {
-        public int ProductId { get; set; }
-    }
+    //public class ProductNFTMetadata : NFT1155Metadata
+    //{
+    //    public int ProductId { get; set; }
+    //}
 
 }

@@ -28,7 +28,7 @@ namespace ERC1155ContractLibraryN7.Testing
             _userName = userName;
             _password = password;
         }
-        public Task<IPFSFileInfo> AddNftsMetadataToIpfsAsync<T>(T metadata, string fileName) where T : NFT1155Metadata
+        public Task<IPFSFileInfo> AddNftsMetadataToIpfsAsync<T>(T metadata, string fileName) where T : TokenMetadata
         {
             var ipfsClient = GetSimpleHttpIpfs();
             return ipfsClient.AddObjectAsJson(metadata, fileName);

@@ -32,10 +32,10 @@
                         <div class="col mb-4">
                             <div class="card shadow h-100">
                                 <div class="square-image">
-                                    <img src="@ConvertIpfsToHttp(nft.Image)" class="card-img-top" alt="@nft.Name" />
+                                    <img src="@ConvertIpfsToHttp(nft.TokenMetadata.Image)" class="card-img-top" alt="@nft.TokenMetadata.Name" />
                                 </div>
                                 <div class="card-body">
-                                    <h5 class="card-title">@nft.Name</h5>
+                                    <h5 class="card-title">@nft.TokenMetadata.Name</h5>
                                     <p class="card-text">
                                         <strong>TokenId:</strong> @nft.TokenId
                                     </p>
@@ -108,7 +108,7 @@
     bool EthereumAvailable { get; set; }
     string SelectedAccount { get; set; }
     IEthereumHostProvider _ethereumHostProvider;
-    List<NFT> myNfts;
+    List<NFTViewModel> myNfts;
 
     private UpdateNftModel UpdateNftModel { get; set; } = new UpdateNftModel();
 
