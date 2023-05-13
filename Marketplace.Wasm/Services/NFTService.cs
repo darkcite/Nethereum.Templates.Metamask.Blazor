@@ -106,7 +106,7 @@ namespace Marketplace.Wasm.Services
 
         public Task<List<NFT>> LoadNFTsOwnedByAccount(string account) => LoadNFTs(_ => true, account, true);
 
-        public async Task UpdateNFTDetailsAsync(BigInteger tokenId, BigInteger newPrice, bool newStatus, string newContactInfo)
+        public async Task UpdateNFTDetailsAsync(BigInteger tokenId, BigInteger newPrice, bool newStatus)
         {
             var setApprovalFunction = _erc1155Service.ContractHandler.GetFunction<SetApprovalForAllFunction>();
 
@@ -132,7 +132,7 @@ namespace Marketplace.Wasm.Services
                 Id = tokenId,
                 NewPrice = newPrice,
                 NewStatus = newStatus,
-                NewContactInfo = newContactInfo
+                NewContactInfo = ""
             };
             var updateFunction = _erc1155Service.ContractHandler.GetFunction<UpdateTokenForSaleFunction>();
 

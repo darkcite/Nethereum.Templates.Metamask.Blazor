@@ -7,14 +7,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Marketplace.Wasm", "Marketp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERC1155ContractLibrary", "ERC1155ContractLibrary\ERC1155ContractLibrary.csproj", "{8CEFFCB5-1BD4-421E-BC79-054075442F0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERC1155ContractLibrary.Testing", "ERC1155ContractLibrary.Testing\ERC1155ContractLibrary.Testing.csproj", "{C47CE8A0-94A6-456A-AD42-98940058E1F0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nethereum.XUnitEthereumClients", "Nethereum.XUnitEthereumClients\Nethereum.XUnitEthereumClients.csproj", "{B70D0283-7A4B-405E-94E8-A18C50D49295}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D4FDA939-F13E-4A10-9D4D-F25D8E5320B6}"
 	ProjectSection(SolutionItems) = preProject
 		contracts\MyERC1155.sol = contracts\MyERC1155.sol
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERC1155ContractLibraryN7.Testing", "ERC1155ContractLibraryN7.Testing\ERC1155ContractLibraryN7.Testing.csproj", "{3924CE3F-CB6C-4424-9190-E51BD43737B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,14 +34,14 @@ Global
 		{8CEFFCB5-1BD4-421E-BC79-054075442F0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8CEFFCB5-1BD4-421E-BC79-054075442F0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8CEFFCB5-1BD4-421E-BC79-054075442F0F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C47CE8A0-94A6-456A-AD42-98940058E1F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C47CE8A0-94A6-456A-AD42-98940058E1F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C47CE8A0-94A6-456A-AD42-98940058E1F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C47CE8A0-94A6-456A-AD42-98940058E1F0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B70D0283-7A4B-405E-94E8-A18C50D49295}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B70D0283-7A4B-405E-94E8-A18C50D49295}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B70D0283-7A4B-405E-94E8-A18C50D49295}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B70D0283-7A4B-405E-94E8-A18C50D49295}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3924CE3F-CB6C-4424-9190-E51BD43737B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3924CE3F-CB6C-4424-9190-E51BD43737B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3924CE3F-CB6C-4424-9190-E51BD43737B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3924CE3F-CB6C-4424-9190-E51BD43737B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

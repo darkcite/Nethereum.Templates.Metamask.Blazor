@@ -5,7 +5,6 @@ namespace Marketplace.Wasm.Models
     {
         public decimal Price { get; set; } //Change this from BigInteger to decimal
         public bool ForSale { get; set; }
-        public string ContactInfo { get; set; }
     }
 }
 

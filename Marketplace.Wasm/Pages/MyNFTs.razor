@@ -53,9 +53,6 @@
                                             <span><i class="far fa-square text-danger"></i></span>
                                         }
                                     </p>
-                                    <p class="card-text">
-                                        <strong>Contact Info:</strong> @nft.ContactInfo
-                                    </p>
                                 </div>
                                 <div class="card-footer">
                                     <button class="btn btn-primary" @onclick="() => OpenModal(nft.TokenId)">Update NFT</button>
@@ -81,10 +78,6 @@
                                                 <div class="mb-3 form-check">
                                                     <InputCheckbox id="forSale" @bind-Value="@UpdateNftModel.ForSale" class="form-check-input" />
                                                     <label class="form-check-label" for="forSale">For sale</label>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="contactInfo" class="form-label">New contact info</label>
-                                                    <InputText id="contactInfo" @bind-Value="@UpdateNftModel.ContactInfo" class="form-control" />
                                                 </div>
                                                 <button type="submit" class="btn btn-primary">Update</button>
                                             </EditForm>
@@ -161,7 +154,7 @@
     private async Task UpdateNFT(BigInteger tokenId)
     {
         BigInteger priceInWei = Web3.Convert.ToWei(UpdateNftModel.Price);
-        await NftService.UpdateNFTDetailsAsync(tokenId, priceInWei, UpdateNftModel.ForSale, UpdateNftModel.ContactInfo);
+        await NftService.UpdateNFTDetailsAsync(tokenId, priceInWei, UpdateNftModel.ForSale);
         await LoadMyNfts(); // to refresh the data
         CloseModal(tokenId);
     }
@@ -174,8 +167,7 @@
         UpdateNftModel = new UpdateNftModel
         {
             Price = priceInEther,
-            ForSale = myNfts.FirstOrDefault(n => n.TokenId == tokenId).ForSale,
-            ContactInfo = myNfts.FirstOrDefault(n => n.TokenId == tokenId).ContactInfo
+            ForSale = myNfts.FirstOrDefault(n => n.TokenId == tokenId).ForSale
         };
 
         JsRuntime.InvokeVoidAsync("window.openModal", $"modal{tokenId.ToString()}");
