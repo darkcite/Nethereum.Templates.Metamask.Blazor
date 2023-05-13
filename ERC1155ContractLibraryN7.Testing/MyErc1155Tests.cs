@@ -16,8 +16,8 @@ public class MyErc1155Test
 
     private readonly string _contractId;
     private readonly HexBigInteger _deploymentBlockNumber;
-    private readonly string infU = "";
-    private readonly string infP = "";
+    private readonly string infU = "2OyEUF7r4netkvcqOQNPkAkyVHQ";
+    private readonly string infP = "d98294208b5d4302c6fd510a4d4df4c1";
 
     public MyErc1155Test(EthereumClientIntegrationFixture ethereumClientIntegrationFixture)
     {

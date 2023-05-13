@@ -20,7 +20,11 @@
                         </div>
                         <div class="card-footer bg-dark d-flex justify-content-between align-items-center">
                             <h5 class="text-white mb-0">@Web3.Convert.FromWei(nft.Price).ToString("F8") ETH</h5>
-                            <button class="btn btn-primary" @onclick="() => BuyNFT(nft)">Buy</button>
+                            <AuthorizeView Roles="EthereumConnected">
+                                <Authorized Context="authContext">
+                                    <button class="btn btn-primary" @onclick="() => BuyNFT(nft)">Buy</button>
+                                </Authorized>
+                            </AuthorizeView>
                         </div>
                     </div>
                 </div>
