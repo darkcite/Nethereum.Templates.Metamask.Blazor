@@ -11,6 +11,8 @@ using Nethereum.Contracts.ContractHandlers;
 using Nethereum.Contracts;
 using System.Threading;
 using ERC1155ContractLibrary.Contracts.MyERC1155.ContractDefinition;
+using Nethereum.ABI.Model;
+using System.Linq;
 
 namespace ERC1155ContractLibrary.Contracts.MyERC1155
 {
@@ -578,5 +580,23 @@ namespace ERC1155ContractLibrary.Contracts.MyERC1155
             return await ContractHandler.QueryAsync<GetOwnerFunction, string>(getOwnerFunction);
         }
 
+        public async Task<byte> QueryRoyaltiesAsync(BigInteger tokenId)
+        {
+            var royaltiesFunction = new RoyaltiesFunction() { ReturnValue1 = tokenId };
+            var royaltiesOutputDTO = await ContractHandler.QueryDeserializingToObjectAsync<RoyaltiesFunction, RoyaltiesOutputDTO>(royaltiesFunction);
+            return royaltiesOutputDTO.ReturnValue1;
+        }
+
+        public async Task<RoyaltyInfoOutputDTO> QueryRoyaltyInfoAsync(BigInteger tokenId, BigInteger salePrice)
+        {
+            var royaltyInfoFunction = new RoyaltyInfoFunction() { TokenId = tokenId, SalePrice = salePrice };
+            var royaltyInfoOutputDTO = await ContractHandler.QueryDeserializingToObjectAsync<RoyaltyInfoFunction, RoyaltyInfoOutputDTO>(royaltyInfoFunction);
+            return royaltyInfoOutputDTO;
+        }
+
+        public Event<TokenSaleStatusUpdatedEventDTO> GetTokenSaleStatusUpdatedEvent()
+        {
+            return ContractHandler.GetEvent<TokenSaleStatusUpdatedEventDTO>();
+        }
     }
 }
