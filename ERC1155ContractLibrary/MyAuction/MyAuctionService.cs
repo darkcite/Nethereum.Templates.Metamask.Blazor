@@ -51,6 +51,20 @@ namespace ERC1155ContractLibrary.Contracts.MyAuction
         }
 
         //==================
+        public async Task<TransactionReceipt> StartAuction(BigInteger tokenId, BigInteger duration, BigInteger reservePrice)  //, string senderAddress
+        {
+            var startAuctionFunction = new StartAuctionFunction
+            {
+                TokenId = tokenId,
+                Duration = duration,
+                ReservePrice = reservePrice,
+                //FromAddress = senderAddress, // Ensure that you have the sender's address
+                //Gas = new BigInteger(300000) // You need to estimate the gas
+            };
+
+            return await ContractHandler.SendRequestAndWaitForReceiptAsync(startAuctionFunction);
+        }
+        //==================
 
         public Task<string> BidRequestAsync(BidFunction bidFunction)
         {
@@ -62,18 +76,20 @@ namespace ERC1155ContractLibrary.Contracts.MyAuction
             return ContractHandler.SendRequestAndWaitForReceiptAsync(bidFunction, cancellationToken);
         }
 
-        public Task<string> BidRequestAsync(BigInteger tokenId)
+        public Task<string> BidRequestAsync(BigInteger tokenId, BigInteger etherAmount)
         {
             var bidFunction = new BidFunction();
             bidFunction.TokenId = tokenId;
+            bidFunction.AmountToSend = etherAmount;
 
             return ContractHandler.SendRequestAsync(bidFunction);
         }
 
-        public Task<TransactionReceipt> BidRequestAndWaitForReceiptAsync(BigInteger tokenId, CancellationTokenSource cancellationToken = null)
+        public Task<TransactionReceipt> BidRequestAndWaitForReceiptAsync(BigInteger tokenId, BigInteger etherAmount, CancellationTokenSource cancellationToken = null)
         {
             var bidFunction = new BidFunction();
             bidFunction.TokenId = tokenId;
+            bidFunction.AmountToSend = etherAmount;
 
             return ContractHandler.SendRequestAndWaitForReceiptAsync(bidFunction, cancellationToken);
         }
