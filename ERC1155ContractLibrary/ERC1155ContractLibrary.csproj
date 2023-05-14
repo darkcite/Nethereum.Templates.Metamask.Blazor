@@ -8,4 +8,12 @@
         <PackageReference Include="Nethereum.Web3" Version="4.14.0" />
     </ItemGroup>
     
+    <ItemGroup>
+      <None Remove="MyAuction\" />
+      <None Remove="MyAuction\ContractDefinition\" />
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="MyAuction\" />
+      <Folder Include="MyAuction\ContractDefinition\" />
+    </ItemGroup>
 </Project>

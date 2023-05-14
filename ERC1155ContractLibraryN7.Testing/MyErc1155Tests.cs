@@ -88,12 +88,13 @@ public class MyErc1155Test
 
             };
 
+            byte royalty = 10;
 
             var howManyTokensOfThisTypeToMint = 1;
             var metadataIpfs = await nftIpfsService.AddNftsMetadataToIpfsAsync(tokenMetadata, userDefinedTokenId + ".json");
 
             var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(userDefinedTokenId, "ipfs://" + metadataIpfs.Hash);
-            var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, userDefinedTokenId, howManyTokensOfThisTypeToMint, new byte[] { });
+            var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, userDefinedTokenId, howManyTokensOfThisTypeToMint, royalty, new byte[] { });
 
             var balance = await erc1155Service.BalanceOfQueryAsync(addressToRegisterOwnership, (BigInteger)userDefinedTokenId);
             Assert.Equal(howManyTokensOfThisTypeToMint, balance);
@@ -141,7 +142,7 @@ public class MyErc1155Test
         // Retrieve logs for the "TokenCreated" event
         var tokenData = await erc1155Service.GetTokenDataAsync(111);
 
-        var setForSaleResult = erc1155Service.SetTokenForSaleStatusAsync(111, 3000000000000000000, true, "srk");
+        var setForSaleResult = erc1155Service.SetTokenForSaleStatusAsync(111, 3000000000000000000, 1, true);
 
         var approveCOntractAsOperator = await erc1155Service.SetApprovalForAllRequestAndWaitForReceiptAsync(_contractId, true);
 
@@ -195,7 +196,9 @@ public class MyErc1155Test
         var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(userDefinedTokenId,
              "ipfs://" + metadataIpfs.Hash);
 
-        var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, userDefinedTokenId, howManyTokensOfThisTypeToMint, new byte[] { });
+        byte royalty = 10;
+
+        var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, userDefinedTokenId, howManyTokensOfThisTypeToMint, royalty, new byte[] { });
     }
 
     [Fact]

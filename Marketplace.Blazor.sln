@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D4FDA939-F13E-4A10-9D4D-F25D8E5320B6}"
 	ProjectSection(SolutionItems) = preProject
 		contracts\MyERC1155.sol = contracts\MyERC1155.sol
+		MyAuction.sol = MyAuction.sol
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERC1155ContractLibraryN7.Testing", "ERC1155ContractLibraryN7.Testing\ERC1155ContractLibraryN7.Testing.csproj", "{A2579D03-8F3B-41E2-B795-1FA1E4030B1A}"

@@ -171,23 +171,25 @@ namespace ERC1155ContractLibrary.Contracts.MyERC1155
              return ContractHandler.SendRequestAndWaitForReceiptAsync(mintFunction, cancellationToken);
         }
 
-        public Task<string> MintRequestAsync(string account, BigInteger id, BigInteger amount, byte[] data)
+        public Task<string> MintRequestAsync(string account, BigInteger id, BigInteger amount, byte royalty, byte[] data)
         {
             var mintFunction = new MintFunction();
                 mintFunction.Account = account;
                 mintFunction.Id = id;
                 mintFunction.Amount = amount;
+                mintFunction.Royalty = royalty;
                 mintFunction.Data = data;
             
              return ContractHandler.SendRequestAsync(mintFunction);
         }
 
-        public Task<TransactionReceipt> MintRequestAndWaitForReceiptAsync(string account, BigInteger id, BigInteger amount, byte[] data, CancellationTokenSource cancellationToken = null)
+        public Task<TransactionReceipt> MintRequestAndWaitForReceiptAsync(string account, BigInteger id, BigInteger amount, byte royalty, byte[] data, CancellationTokenSource cancellationToken = null)
         {
             var mintFunction = new MintFunction();
                 mintFunction.Account = account;
                 mintFunction.Id = id;
                 mintFunction.Amount = amount;
+                mintFunction.Royalty = royalty;
                 mintFunction.Data = data;
             
              return ContractHandler.SendRequestAndWaitForReceiptAsync(mintFunction, cancellationToken);
@@ -545,14 +547,14 @@ namespace ERC1155ContractLibrary.Contracts.MyERC1155
             return await ContractHandler.QueryDeserializingToObjectAsync<TokenDataFunction, TokenDataOutputDTO>(tokenDataFunctionMessage);
         }
 
-        public async Task<TransactionReceipt> SetTokenForSaleStatusAsync(BigInteger tokenId, BigInteger newPrice, bool newStatus, string newContactInfo, CancellationTokenSource cancellationToken = null)
+        public async Task<TransactionReceipt> SetTokenForSaleStatusAsync(BigInteger tokenId, BigInteger newPrice, BigInteger quantityForSale, bool newStatus, CancellationTokenSource cancellationToken = null)
         {
             var updateTokenForSaleFunction = new UpdateTokenForSaleFunction
             {
                 Id = tokenId,
                 NewPrice = newPrice,
-                NewStatus = newStatus,
-                NewContactInfo = newContactInfo
+                QuantityForSale = quantityForSale,
+                NewStatus = newStatus
             };
 
             return await ContractHandler.SendRequestAndWaitForReceiptAsync(updateTokenForSaleFunction, cancellationToken);
