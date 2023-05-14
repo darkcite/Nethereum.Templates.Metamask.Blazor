@@ -156,7 +156,8 @@ namespace Marketplace.Wasm.Services
             var buyTokenFunctionMessage = new BuyTokenFunction
             {
                 TokenId = tokenId,
-                AmountToSend = etherAmount
+                AmountToSend = etherAmount,
+                Quantity = 1,
             };
 
             // Encode the function call

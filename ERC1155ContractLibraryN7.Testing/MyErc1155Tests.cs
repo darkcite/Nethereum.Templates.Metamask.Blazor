@@ -8,6 +8,8 @@ using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.XUnitEthereumClients;
 using Newtonsoft.Json.Linq;
+using Nethereum.Model;
+using Nethereum.RPC.NonceServices;
 
 namespace ERC1155ContractLibraryN7.Testing;
 
@@ -19,15 +21,15 @@ public class MyErc1155Test
     private readonly string _contractId;
     private readonly string _auctionContractId;
     private readonly HexBigInteger _deploymentBlockNumber;
-    private readonly string infU = "";
-    private readonly string infP = "";
+    private readonly string infU = "2OyEUF7r4netkvcqOQNPkAkyVHQ";
+    private readonly string infP = "d98294208b5d4302c6fd510a4d4df4c1";
 
     /// <summary>
     /// Test properties
     /// </summary>
     private readonly byte royalty = 10;
     private readonly BigInteger howManyTokensOfThisTypeToMint = 1;
-    private readonly string addressToRegisterOwnership = "0x3C3D1822Fff0DdcB26A8C7FdD17472834bd5855E";
+    private readonly string addressToRegisterOwnership = "0x6F637f5f49a5A10684a9eeC1Ea5ffef025413509";
     private readonly BigInteger userDefinedTokenId = 666;
 
     public MyErc1155Test(EthereumClientIntegrationFixture ethereumClientIntegrationFixture)
@@ -81,24 +83,30 @@ public class MyErc1155Test
             var file = files[i];
             var imageIpfs = await nftIpfsService.AddFileToIpfsAsync(file);
 
-            var userDefinedTokenId = i;
+            var userDefinedTokenIid = i+1;
 
             var tokenMetadata = new TokenMetadata()
             {
                 Name = Path.GetFileNameWithoutExtension(file),
                 Image = "ipfs://" + imageIpfs.Hash,
                 Description = $"Gem {i} - {Path.GetFileNameWithoutExtension(file)}", // Using index and file name as Description
-                ExternalUrl = ""
+                ExternalUrl = "",
+                BackgroundColor = "#FFFFFF",
+                Traits = new Trait[] { }
             };
 
-            var metadataIpfs = await nftIpfsService.AddNftsMetadataToIpfsAsync(tokenMetadata, userDefinedTokenId + ".json");
+            var metadataIpfs = await nftIpfsService.AddNftsMetadataToIpfsAsync(tokenMetadata, userDefinedTokenIid + ".json");
 
-            var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(userDefinedTokenId, "ipfs://" + metadataIpfs.Hash);
-            var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, userDefinedTokenId, howManyTokensOfThisTypeToMint, royalty, new byte[] { });
+            var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(userDefinedTokenIid, "ipfs://" + metadataIpfs.Hash);
+            var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, userDefinedTokenIid, howManyTokensOfThisTypeToMint, royalty, new byte[] { });
 
-            var balance = await erc1155Service.BalanceOfQueryAsync(addressToRegisterOwnership, (BigInteger)userDefinedTokenId);
+            //await Task.Delay(TimeSpan.FromSeconds(15));
+
+            var tokenData = await erc1155Service.GetTokenDataAsync(userDefinedTokenIid);
+
+            var balance = await erc1155Service.BalanceOfQueryAsync(addressToRegisterOwnership, (BigInteger)userDefinedTokenIid);
             Assert.Equal(howManyTokensOfThisTypeToMint, balance);
-            var addressOfToken = await erc1155Service.UriQueryAsync(userDefinedTokenId);
+            var addressOfToken = await erc1155Service.UriQueryAsync(userDefinedTokenIid);
             Assert.Equal("ipfs://" + metadataIpfs.Hash, addressOfToken);
         }
     }
@@ -124,11 +132,18 @@ public class MyErc1155Test
         web3.Eth.TransactionManager.UseLegacyAsDefault = true;
         var erc1155Service = new MyERC1155Service(web3, _contractId);
 
-        var tokenData = await erc1155Service.GetTokenDataAsync(333);
-        var oldOwner = erc1155Service.GetOwnerOfTokenAsync(333);
-        var result = await erc1155Service.BuyTokenAsync(333, 9000000000000000000);
-        tokenData = await erc1155Service.GetTokenDataAsync(333);
-        var newOwner = erc1155Service.GetOwnerOfTokenAsync(333);
+        //var nonce = await web3.TransactionManager.Account.NonceService.GetNextNonceAsync();
+        //var contractNonce = await erc1155Service.GetUserNonceAsync(web3.TransactionManager.Account.Address);
+
+        var tokenData = await erc1155Service.GetTokenDataAsync(2);
+        var oldOwner = erc1155Service.GetOwnerOfTokenAsync(2);
+        //await Task.Delay(TimeSpan.FromSeconds(3));
+        var result = await erc1155Service.BuyTokenAsync(2, 1, 3000000000000000000); //9000000000000000000
+        var updtE = erc1155Service.GetTokenSaleStatusUpdatedEvent();
+
+        await Task.Delay(TimeSpan.FromSeconds(3));
+        tokenData = await erc1155Service.GetTokenDataAsync(2);
+        var newOwner = erc1155Service.GetOwnerOfTokenAsync(2);
     }
 
     [Fact]
@@ -171,18 +186,22 @@ public class MyErc1155Test
 
         //uploading to ipfs our documents
         var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: infU, password: infP);
-        var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/1.gif");
+        var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/14 Ct.gif");
 
         //adding all our document ipfs links to the metadata and the description
 
         var tokenMetadata = new TokenMetadata()
         {
             Name = "",
-            Image = "",
-            Description = "",
+            Image = "ipfs://" + imageIpfs.Hash,
+            Description = "sraka",
             ExternalUrl = "",
-
+            BackgroundColor = "#FFFFFF",
+            Traits = new Trait[] { }
         };
+
+        var userDefinedTokenId = 777;
+
         //Adding the metadata to ipfs
         var metadataIpfs =
             await nftIpfsService.AddNftsMetadataToIpfsAsync(tokenMetadata, userDefinedTokenId + ".json");
@@ -193,6 +212,14 @@ public class MyErc1155Test
              "ipfs://" + metadataIpfs.Hash);
 
         var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, userDefinedTokenId, howManyTokensOfThisTypeToMint, royalty, new byte[] { });
+
+        await Task.Delay(TimeSpan.FromSeconds(30));
+        var tokenData = await erc1155Service.GetTokenDataAsync(userDefinedTokenId);
+
+        var balance = await erc1155Service.BalanceOfQueryAsync(addressToRegisterOwnership, (BigInteger)userDefinedTokenId);
+        Assert.Equal(howManyTokensOfThisTypeToMint, balance);
+        var addressOfToken = await erc1155Service.UriQueryAsync(userDefinedTokenId);
+        Assert.Equal("ipfs://" + metadataIpfs.Hash, addressOfToken);       
     }
 
     [Fact]

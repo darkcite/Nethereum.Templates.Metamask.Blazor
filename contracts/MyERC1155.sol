@@ -22,7 +22,6 @@ contract MyERC1155 is
     mapping(uint256 => bool) private _tokenExists;
     mapping(uint256 => address) public owners;
     mapping(uint256 => uint8) public royalties;
-    mapping(address => uint256) nonces; // Add a nonce for each address
 
     struct TokenData {
         uint256 price;
@@ -130,13 +129,11 @@ contract MyERC1155 is
         emit TokenSaleStatusUpdated(id, newStatus, quantityForSale);
     }
 
-    function buyToken(
-        uint256 tokenId,
-        uint256 quantity,
-        uint256 userNonce
-    ) external payable nonReentrant {
-        require(userNonce == nonces[msg.sender]++, "Invalid nonce"); // Check the nonce
-
+    function buyToken(uint256 tokenId, uint256 quantity)
+        external
+        payable
+        nonReentrant
+    {
         require(tokenData[tokenId].forSale, "Token is not for sale");
         require(
             quantity <= tokenData[tokenId].quantityForSale,

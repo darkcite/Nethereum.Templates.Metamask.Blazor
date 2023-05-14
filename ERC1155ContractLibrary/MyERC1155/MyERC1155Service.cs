@@ -13,6 +13,7 @@ using System.Threading;
 using ERC1155ContractLibrary.Contracts.MyERC1155.ContractDefinition;
 using Nethereum.ABI.Model;
 using System.Linq;
+using Nethereum.Util;
 
 namespace ERC1155ContractLibrary.Contracts.MyERC1155
 {
@@ -563,16 +564,19 @@ namespace ERC1155ContractLibrary.Contracts.MyERC1155
         }
 
 
-        public async Task<string> BuyTokenAsync(BigInteger tokenId, BigInteger etherAmount)
+        public async Task<string> BuyTokenAsync(BigInteger tokenId, BigInteger quantity, BigInteger etherAmount)
         {
             var buyTokenFunction = new BuyTokenFunction
             {
                 TokenId = tokenId,
+                Quantity = quantity,
                 AmountToSend = etherAmount
+                //GasPrice = Web3.Convert.ToWei(80, UnitConversion.EthUnit.Gwei)
             };
 
             return await ContractHandler.SendRequestAsync(buyTokenFunction);
         }
+
 
         public async Task<string> GetOwnerOfTokenAsync(BigInteger tokenId)
         {
