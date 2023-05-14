@@ -58,6 +58,7 @@ namespace Marketplace.Wasm.Services
                         TokenId = log.Event.TokenId,
                         Price = tokenData.Price,
                         ForSale = tokenData.ForSale,
+                        QuantityForSale = tokenData.QuantityForSale,
                         TokenMetadata = metadata
                     });
                 }
@@ -130,7 +131,7 @@ namespace Marketplace.Wasm.Services
                 Id = tokenId,
                 NewPrice = newPrice,
                 NewStatus = newStatus,
-                NewContactInfo = ""
+                QuantityForSale = 1
             };
             var updateFunction = _erc1155Service.ContractHandler.GetFunction<UpdateTokenForSaleFunction>();
 
@@ -196,6 +197,7 @@ namespace Marketplace.Wasm.Services
                             TokenId = log.Event.TokenId,
                             Price = tokenData.Price,
                             ForSale = tokenData.ForSale,
+                            QuantityForSale = tokenData.QuantityForSale,
                             TokenMetadata = metadata
                         });
                     }
