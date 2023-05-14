@@ -1,6 +1,8 @@
 ﻿using System.Numerics;
 using ERC1155ContractLibrary.Contracts.MyERC1155;
 using ERC1155ContractLibrary.Contracts.MyERC1155.ContractDefinition;
+using ERC1155ContractLibrary.Contracts.MyAuction;
+using ERC1155ContractLibrary.Contracts.MyAuction.ContractDefinition;
 using Nethereum.Contracts.Standards.ERC1155;
 using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.Eth.DTOs;
@@ -44,6 +46,10 @@ public class MyErc1155Test
 
         var ercERC1155Deployment = new MyERC1155Deployment();
         var deploymentReceipt = await MyERC1155Service.DeployContractAndWaitForReceiptAsync(web3, ercERC1155Deployment);
+
+        var myAuctionDeployment = new MyAuctionDeployment { TokenAddress = deploymentReceipt.ContractAddress };
+        var auctionDeploymentReceipt = await MyAuctionService.DeployContractAndWaitForReceiptAsync(web3, myAuctionDeployment);
+
 
         string appsettingsTestJsonPath = "appsettings.test.json";
         var appsettingstest = JObject.Parse(File.ReadAllText(appsettingsTestJsonPath));
