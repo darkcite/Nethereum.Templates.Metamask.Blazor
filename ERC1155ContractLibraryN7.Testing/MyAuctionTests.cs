@@ -7,6 +7,7 @@ using ERC1155ContractLibrary.Contracts.MyAuction;
 using Nethereum.Util;
 using Nethereum.Web3;
 using System.Security.Cryptography;
+using ERC1155ContractLibrary.Contracts.MyERC1155;
 
 namespace ERC1155ContractLibraryN7.Testing
 {
@@ -52,6 +53,12 @@ namespace ERC1155ContractLibraryN7.Testing
 
 
             var auctionService = new MyAuctionService(web3, _auctionContractId);
+            var erc1155Service = new MyERC1155Service(web3, _contractId);
+
+            var tokenData = await erc1155Service.GetTokenDataAsync(tokenId);
+            var oldOwner = erc1155Service.GetOwnerOfTokenAsync(tokenId);
+            var balance = await erc1155Service.BalanceOfQueryAsync(senderAddress, (BigInteger)tokenId);
+
             // Start the auction
             var startResult = await auctionService.StartAuction(tokenId, duration, reservePrice);
             //Assert.IsTrue(startResult.);
