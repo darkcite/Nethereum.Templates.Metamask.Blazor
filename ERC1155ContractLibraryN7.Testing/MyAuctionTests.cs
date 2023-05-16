@@ -56,7 +56,7 @@ namespace ERC1155ContractLibraryN7.Testing
             var erc1155Service = new MyERC1155Service(web3, _contractId);
 
             var tokenData = await erc1155Service.GetTokenDataAsync(tokenId);
-            var oldOwner = erc1155Service.GetOwnerOfTokenAsync(tokenId);
+            //var oldOwner = erc1155Service.GetOwnerOfTokenAsync(tokenId);
             var balance = await erc1155Service.BalanceOfQueryAsync(senderAddress, (BigInteger)tokenId);
 
             // Start the auction

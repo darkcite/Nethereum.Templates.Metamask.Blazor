@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Nethereum.XUnitEthereumClients\Nethereum.XUnitEthereumClients.csproj" />
     <ProjectReference Include="..\ERC1155ContractLibrary\ERC1155ContractLibrary.csproj" />
+    <ProjectReference Include="..\Marketplace.Shared\Marketplace.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.test.json">

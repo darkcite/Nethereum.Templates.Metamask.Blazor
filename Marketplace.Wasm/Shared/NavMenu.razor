@@ -17,6 +17,15 @@
                 <NavLink class="nav-link" href="my-nfts" Match="NavLinkMatch.All">My NFTs</NavLink>
             </li>
         </ul>
+        <AuthorizeView Roles="EthereumConnected">
+            <Authorized Context="authContext">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <NavLink class="nav-link" href="my-profile" Match="NavLinkMatch.All">My Profile</NavLink>
+                    </li>
+                </ul>
+            </Authorized>
+        </AuthorizeView>
         <div class="d-flex">
             <Metamask />
         </div>

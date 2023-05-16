@@ -8,7 +8,7 @@ using Nethereum.Contracts.Standards.ERC1155;
 using Nethereum.Web3;
 using Newtonsoft.Json;
 
-namespace ERC1155ContractLibraryN7.Testing
+namespace Marketplace.Shared
 {
     public class NFTIpfsService
     {

@@ -11,6 +11,7 @@ using ERC1155ContractLibrary.Contracts.MyERC1155.ContractDefinition;
 using Nethereum.Hex.HexTypes;
 using System.Numerics;
 using Nethereum.Web3;
+using Marketplace.Shared;
 
 namespace Marketplace.Wasm.Services
 {
@@ -95,8 +96,8 @@ namespace Marketplace.Wasm.Services
         // Сheck if the current owner of the token is the provided account
         private async Task<bool> IsTokenOwnedByAccount(string account, BigInteger tokenId)
         {
-            string currentOwner = await _erc1155Service.GetOwnerOfTokenAsync(tokenId).ConfigureAwait(false);
-            return account != null && currentOwner == account;
+            BigInteger balance = await _erc1155Service.BalanceOfQueryAsync(account, tokenId).ConfigureAwait(false);
+            return balance > 0;
         }
 
         public Task<List<NFTViewModel>> LoadAllNFTs(string account = null) => LoadNFTs(_ => true, account, false);

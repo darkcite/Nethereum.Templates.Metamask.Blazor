@@ -1,0 +1,73 @@
+﻿@page "/my-profile"
+@implements IDisposable
+@inject SelectedEthereumHostProviderService SelectedHostProviderService
+@using Marketplace.Wasm.Models
+@using System.Numerics;
+@using Nethereum.Web3
+@inject IJSRuntime JsRuntime
+@inject Services.MinterService MinterService
+
+<AuthorizeView Roles="EthereumConnected">
+    <Authorized Context="authContext">
+        <div class="container py-4">
+            <div class="row mb-3">
+                <label class="col-sm-3 col-form-label-lg">Selected Account:</label>
+                <div class="col-sm-6">
+                    @SelectedAccount
+                    <small id="selectedAccountHelp" class="form-text text-muted">The selected account is bound to the host (ie Metamask) on change</small>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-12">
+                    <h4>Become a seller on our marketplace</h4>
+                    <p>Price: 20 ETH</p>
+                    <button class="btn btn-primary" @onclick="BecomeSeller">Become</button>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div>
+            Please connect to Ethereum !
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    bool EthereumAvailable { get; set; }
+    string SelectedAccount { get; set; }
+    IEthereumHostProvider _ethereumHostProvider;
+
+    protected override void OnInitialized()
+    {
+        //metamask is selected
+        _ethereumHostProvider = SelectedHostProviderService.SelectedHost;
+        _ethereumHostProvider.SelectedAccountChanged += HostProvider_SelectedAccountChanged;
+    }
+
+    public void Dispose()
+    {
+        _ethereumHostProvider.SelectedAccountChanged -= HostProvider_SelectedAccountChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        EthereumAvailable = await _ethereumHostProvider.CheckProviderAvailabilityAsync();
+        if (EthereumAvailable)
+        {
+            SelectedAccount = await _ethereumHostProvider.GetProviderSelectedAccountAsync();
+        }
+    }
+
+    private async Task HostProvider_SelectedAccountChanged(string account)
+    {
+        SelectedAccount = account;
+        this.StateHasChanged();
+    }
+
+    private async Task BecomeSeller()
+    {
+        await MinterService.BuyMinterRoleAsync();
+    }
+}

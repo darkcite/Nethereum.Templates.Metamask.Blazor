@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ERC1155ContractLibraryN7.Testing", "ERC1155ContractLibraryN7.Testing\ERC1155ContractLibraryN7.Testing.csproj", "{A2579D03-8F3B-41E2-B795-1FA1E4030B1A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Marketplace.Shared", "Marketplace.Shared\Marketplace.Shared.csproj", "{48C87A91-3E0F-46CF-ACD6-C840DF637051}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{A2579D03-8F3B-41E2-B795-1FA1E4030B1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2579D03-8F3B-41E2-B795-1FA1E4030B1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2579D03-8F3B-41E2-B795-1FA1E4030B1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48C87A91-3E0F-46CF-ACD6-C840DF637051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48C87A91-3E0F-46CF-ACD6-C840DF637051}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48C87A91-3E0F-46CF-ACD6-C840DF637051}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48C87A91-3E0F-46CF-ACD6-C840DF637051}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

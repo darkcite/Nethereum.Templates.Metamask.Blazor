@@ -1,5 +1,5 @@
 ﻿using System;
-namespace ERC1155ContractLibraryN7.Testing
+namespace Marketplace.Shared
 {
     public class TokenMetadata
     {

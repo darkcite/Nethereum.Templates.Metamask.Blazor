@@ -4,12 +4,14 @@ using ERC1155ContractLibrary.Contracts.MyERC1155.ContractDefinition;
 using ERC1155ContractLibrary.Contracts.MyAuction;
 using ERC1155ContractLibrary.Contracts.MyAuction.ContractDefinition;
 using Nethereum.Contracts.Standards.ERC1155;
+using Nethereum.Contracts.Extensions;
 using Nethereum.Hex.HexTypes;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.XUnitEthereumClients;
 using Newtonsoft.Json.Linq;
 using Nethereum.Model;
 using Nethereum.RPC.NonceServices;
+using Marketplace.Shared;
 
 namespace ERC1155ContractLibraryN7.Testing;
 
@@ -21,8 +23,8 @@ public class MyErc1155Test
     private readonly string _contractId;
     private readonly string _auctionContractId;
     private readonly HexBigInteger _deploymentBlockNumber;
-    private readonly string infU = "2OyEUF7r4netkvcqOQNPkAkyVHQ";
-    private readonly string infP = "d98294208b5d4302c6fd510a4d4df4c1";
+    private readonly string infU = "";
+    private readonly string infP = "";
 
     /// <summary>
     /// Test properties
@@ -30,7 +32,7 @@ public class MyErc1155Test
     private readonly byte royalty = 10;
     private readonly BigInteger howManyTokensOfThisTypeToMint = 1;
     private readonly string addressToRegisterOwnership = "0x6F637f5f49a5A10684a9eeC1Ea5ffef025413509";
-    private readonly BigInteger userDefinedTokenId = 666;
+    //private readonly BigInteger userDefinedTokenId = 666;
 
     public MyErc1155Test(EthereumClientIntegrationFixture ethereumClientIntegrationFixture)
     {
@@ -83,7 +85,7 @@ public class MyErc1155Test
             var file = files[i];
             var imageIpfs = await nftIpfsService.AddFileToIpfsAsync(file);
 
-            var userDefinedTokenIid = i+1;
+            //var //userDefinedTokenIid = i+1;
 
             var tokenMetadata = new TokenMetadata()
             {
@@ -94,19 +96,18 @@ public class MyErc1155Test
                 BackgroundColor = "#FFFFFF",
                 Traits = new Trait[] { }
             };
+                      
+            var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, howManyTokensOfThisTypeToMint, royalty, new byte[] { });
+            var justMintedTokenId =  erc1155Service.GetTokenMintedEvent().DecodeAllEventsForEvent(mintReceipt.Logs).FirstOrDefault().Event.TokenId;
 
-            var metadataIpfs = await nftIpfsService.AddNftsMetadataToIpfsAsync(tokenMetadata, userDefinedTokenIid + ".json");
+            var metadataIpfs = await nftIpfsService.AddNftsMetadataToIpfsAsync(tokenMetadata, justMintedTokenId + ".json");
+            var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(justMintedTokenId, "ipfs://" + metadataIpfs.Hash);
 
-            var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(userDefinedTokenIid, "ipfs://" + metadataIpfs.Hash);
-            var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, userDefinedTokenIid, howManyTokensOfThisTypeToMint, royalty, new byte[] { });
+            var tokenData = await erc1155Service.GetTokenDataAsync(justMintedTokenId);
 
-            //await Task.Delay(TimeSpan.FromSeconds(15));
-
-            var tokenData = await erc1155Service.GetTokenDataAsync(userDefinedTokenIid);
-
-            var balance = await erc1155Service.BalanceOfQueryAsync(addressToRegisterOwnership, (BigInteger)userDefinedTokenIid);
+            var balance = await erc1155Service.BalanceOfQueryAsync(addressToRegisterOwnership, justMintedTokenId);
             Assert.Equal(howManyTokensOfThisTypeToMint, balance);
-            var addressOfToken = await erc1155Service.UriQueryAsync(userDefinedTokenIid);
+            var addressOfToken = await erc1155Service.UriQueryAsync(justMintedTokenId);
             Assert.Equal("ipfs://" + metadataIpfs.Hash, addressOfToken);
         }
     }
@@ -136,14 +137,14 @@ public class MyErc1155Test
         //var contractNonce = await erc1155Service.GetUserNonceAsync(web3.TransactionManager.Account.Address);
 
         var tokenData = await erc1155Service.GetTokenDataAsync(2);
-        var oldOwner = erc1155Service.GetOwnerOfTokenAsync(2);
+        //var oldOwner = erc1155Service.GetOwnerOfTokenAsync(2);
         //await Task.Delay(TimeSpan.FromSeconds(3));
         var result = await erc1155Service.BuyTokenAsync(2, 1, 3000000000000000000); //9000000000000000000
         var updtE = erc1155Service.GetTokenSaleStatusUpdatedEvent();
 
         await Task.Delay(TimeSpan.FromSeconds(3));
         tokenData = await erc1155Service.GetTokenDataAsync(2);
-        var newOwner = erc1155Service.GetOwnerOfTokenAsync(2);
+        //var newOwner = erc1155Service.GetOwnerOfTokenAsync(2);
     }
 
     [Fact]
@@ -169,16 +170,18 @@ public class MyErc1155Test
         web3.Eth.TransactionManager.UseLegacyAsDefault = true;
         var erc1155Service = new MyERC1155Service(web3, _contractId);
 
-        var oldOwner = erc1155Service.GetOwnerOfTokenAsync(333);
+        //var oldOwner = erc1155Service.GetOwnerOfTokenAsync(333);
 
         var tokenData = await erc1155Service.GetTokenDataAsync(333);
         
-        var newOwner = erc1155Service.GetOwnerOfTokenAsync(333);
+        //var newOwner = erc1155Service.GetOwnerOfTokenAsync(333);
     }
 
     [Fact]
     public async void CreateNft()
     {
+        var addressToRegisterOwnership = "0x3C3D1822Fff0DdcB26A8C7FdD17472834bd5855E";
+
         var web3 = _ethereumClientIntegrationFixture.GetWeb3(); //if you want to use your local node (ie geth, uncomment this, see appsettings.test.json for further info)
                                                                 //example of configuration as legacy (not eip1559) to work on L2s
         web3.Eth.TransactionManager.UseLegacyAsDefault = true;
@@ -200,26 +203,27 @@ public class MyErc1155Test
             Traits = new Trait[] { }
         };
 
-        var userDefinedTokenId = 777;
-
+        var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, howManyTokensOfThisTypeToMint, royalty, new byte[] { });
+        var justMintedTokenId = erc1155Service.GetTokenMintedEvent().DecodeAllEventsForEvent(mintReceipt.Logs).FirstOrDefault().Event.TokenId;
         //Adding the metadata to ipfs
         var metadataIpfs =
-            await nftIpfsService.AddNftsMetadataToIpfsAsync(tokenMetadata, userDefinedTokenId + ".json");
+            await nftIpfsService.AddNftsMetadataToIpfsAsync(tokenMetadata, justMintedTokenId + ".json");
 
-        var addressToRegisterOwnership = "0x3C3D1822Fff0DdcB26A8C7FdD17472834bd5855E";
-        //Adding the product information
-        var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(userDefinedTokenId,
+        
+
+        
+
+        var tokenUriReceipt = await erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(justMintedTokenId,
              "ipfs://" + metadataIpfs.Hash);
 
-        var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, userDefinedTokenId, howManyTokensOfThisTypeToMint, royalty, new byte[] { });
-
+        
         await Task.Delay(TimeSpan.FromSeconds(30));
-        var tokenData = await erc1155Service.GetTokenDataAsync(userDefinedTokenId);
+        var tokenData = await erc1155Service.GetTokenDataAsync(justMintedTokenId);
 
-        var balance = await erc1155Service.BalanceOfQueryAsync(addressToRegisterOwnership, (BigInteger)userDefinedTokenId);
+        var balance = await erc1155Service.BalanceOfQueryAsync(addressToRegisterOwnership, (BigInteger)justMintedTokenId);
         Assert.Equal(howManyTokensOfThisTypeToMint, balance);
-        var addressOfToken = await erc1155Service.UriQueryAsync(userDefinedTokenId);
-        Assert.Equal("ipfs://" + metadataIpfs.Hash, addressOfToken);       
+        var addressOfToken = await erc1155Service.UriQueryAsync(justMintedTokenId);
+        Assert.Equal("ipfs://" + metadataIpfs.Hash, addressOfToken);
     }
 
     [Fact]

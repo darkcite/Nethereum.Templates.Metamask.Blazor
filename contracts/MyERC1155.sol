@@ -2,7 +2,7 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Burnable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
@@ -11,17 +11,19 @@ import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 contract MyERC1155 is
     ERC1155,
-    Ownable,
+    AccessControlEnumerable,
     Pausable,
     ERC1155Burnable,
     ERC1155Supply,
-    ReentrancyGuard,
-    IERC2981
+    ReentrancyGuard
 {
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    uint256 public constant MINTER_PRICE = 20 ether;
+    uint256 private _currentTokenId = 0;
+
     mapping(uint256 => string) private _tokenURIs;
-    mapping(uint256 => bool) private _tokenExists;
-    mapping(uint256 => address) public owners;
     mapping(uint256 => uint8) public royalties;
+    mapping(uint256 => bool) private _tokenExists;
 
     struct TokenData {
         uint256 price;
@@ -30,6 +32,9 @@ contract MyERC1155 is
     }
 
     mapping(uint256 => TokenData) public tokenData;
+
+    // New mapping to track the original minter of the tokens
+    mapping(uint256 => address) public originalMinters;
 
     event TokenMinted(
         address indexed account,
@@ -49,9 +54,17 @@ contract MyERC1155 is
         uint256 quantity
     );
 
-    constructor() ERC1155("") {}
+    constructor() ERC1155("") {
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _setupRole(MINTER_ROLE, _msgSender());
+    }
 
-    function setURI(string memory newuri) public onlyOwner {
+    // New withdraw function
+    function withdraw() public onlyRole(DEFAULT_ADMIN_ROLE) {
+        payable(_msgSender()).transfer(address(this).balance);
+    }
+
+    function setURI(string memory newuri) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _setURI(newuri);
     }
 
@@ -61,51 +74,73 @@ contract MyERC1155 is
 
     function setTokenUri(uint256 tokenId, string memory tokenURI)
         public
-        onlyOwner
+        onlyRole(DEFAULT_ADMIN_ROLE)
     {
         _tokenURIs[tokenId] = tokenURI;
     }
 
-    function pause() public onlyOwner {
+    function pause() public onlyRole(DEFAULT_ADMIN_ROLE) {
         _pause();
     }
 
-    function unpause() public onlyOwner {
+    function unpause() public onlyRole(DEFAULT_ADMIN_ROLE) {
         _unpause();
+    }
+
+    function buyMinterRole() external payable {
+        require(msg.value >= MINTER_PRICE, "Insufficient Ether value sent");
+        if (msg.value > MINTER_PRICE) {
+            uint256 excessAmount = msg.value - MINTER_PRICE;
+            (bool refundSucceeded, ) = payable(msg.sender).call{
+                value: excessAmount
+            }("");
+            require(refundSucceeded, "Refund of excess amount failed");
+        }
+        grantRole(MINTER_ROLE, msg.sender);
     }
 
     function mint(
         address account,
-        uint256 id,
         uint256 amount,
-        uint8 royalty, // New royalty parameter
+        uint8 royalty,
         bytes memory data
-    ) public onlyOwner {
+    ) public onlyRole(MINTER_ROLE) returns (uint256) {
         require(account != address(0), "ERC1155: mint to the zero address");
-        require(
-            !_tokenExists[id],
-            "ERC1155: minting a token which already exists"
-        );
         require(royalty <= 100, "Royalty cannot be more than 100%");
-        _mint(account, id, amount, data);
-        tokenData[id] = TokenData(0, 0, false);
-        owners[id] = account;
-        _tokenExists[id] = true;
-        royalties[id] = royalty; // Set the royalty
-        emit TokenMinted(account, id, amount);
+        _mint(account, _currentTokenId, amount, data);
+        tokenData[_currentTokenId] = TokenData(0, 0, false);
+        originalMinters[_currentTokenId] = account;
+        royalties[_currentTokenId] = royalty;
+        emit TokenMinted(account, _currentTokenId, amount);
+        _currentTokenId++;
+        return _currentTokenId - 1; // Returns the tokenId of the newly minted token
     }
 
     function mintBatch(
         address to,
-        uint256[] memory ids,
         uint256[] memory amounts,
+        uint8[] memory royaltiesArray,
         bytes memory data
-    ) public onlyOwner {
+    ) public onlyRole(MINTER_ROLE) returns (uint256[] memory) {
         require(to != address(0), "ERC1155: mint to the zero address");
-        _mintBatch(to, ids, amounts, data);
-        for (uint256 i = 0; i < ids.length; i++) {
-            owners[ids[i]] = to;
+        require(
+            amounts.length == royaltiesArray.length,
+            "ERC1155: amounts and royalties length mismatch"
+        );
+        uint256[] memory ids = new uint256[](amounts.length);
+        for (uint256 i = 0; i < amounts.length; i++) {
+            require(
+                royaltiesArray[i] <= 100,
+                "Royalty cannot be more than 100%"
+            );
+            ids[i] = _currentTokenId;
+            tokenData[_currentTokenId] = TokenData(0, 0, false);
+            originalMinters[_currentTokenId] = to;
+            royalties[_currentTokenId] = royaltiesArray[i];
+            _currentTokenId++;
         }
+        _mintBatch(to, ids, amounts, data);
+        return ids; // Returns the tokenIds of the newly minted tokens
     }
 
     function updateTokenForSale(
@@ -119,7 +154,8 @@ contract MyERC1155 is
             "ERC1155: not enough tokens owned for the sale"
         );
         require(
-            msg.sender == owner() || balanceOf(msg.sender, id) > 0,
+            msg.sender == getRoleMember(DEFAULT_ADMIN_ROLE, 0) ||
+                balanceOf(msg.sender, id) > 0,
             "Caller is not owner nor the token owner"
         );
 
@@ -144,7 +180,7 @@ contract MyERC1155 is
             "Insufficient Ether value sent"
         );
 
-        address seller = owners[tokenId];
+        address seller = originalMinters[tokenId];
         uint256 royaltyAmount = (msg.value * royalties[tokenId]) / 100;
         uint256 sellerAmount = msg.value - royaltyAmount;
 
@@ -153,75 +189,27 @@ contract MyERC1155 is
         }("");
         require(sellerTransferSucceeded, "Transfer to seller failed");
 
-        (bool royaltyTransferSucceeded, ) = payable(owners[tokenId]).call{
-            value: royaltyAmount
-        }("");
-        require(royaltyTransferSucceeded, "Transfer of royalty failed"); // Check if the transfer was successful
+        (bool royaltyTransferSucceeded, ) = payable(originalMinters[tokenId])
+            .call{value: royaltyAmount}("");
+        require(royaltyTransferSucceeded, "Transfer of royalty failed");
 
+        // Transfer the token from the seller to the buyer
         _safeTransferFrom(seller, msg.sender, tokenId, quantity, "");
         tokenData[tokenId].quantityForSale -= quantity;
         if (tokenData[tokenId].quantityForSale == 0) {
             tokenData[tokenId].forSale = false;
         }
-        owners[tokenId] = msg.sender;
 
         emit TokenSold(tokenId, seller, msg.sender, msg.value, quantity);
-    }
-
-    function getOwner(uint256 tokenId) public view returns (address) {
-        return owners[tokenId];
     }
 
     function royaltyInfo(uint256 _tokenId, uint256 _salePrice)
         external
         view
-        override
         returns (address receiver, uint256 royaltyAmount)
     {
-        receiver = owners[_tokenId];
+        receiver = originalMinters[_tokenId];
         royaltyAmount = (_salePrice * royalties[_tokenId]) / 100;
-    }
-
-    function _mint(
-        address account,
-        uint256 id,
-        uint256 amount,
-        bytes memory data
-    ) internal override(ERC1155) {
-        super._mint(account, id, amount, data);
-        owners[id] = account;
-    }
-
-    function _mintBatch(
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) internal override(ERC1155) {
-        super._mintBatch(to, ids, amounts, data);
-        for (uint256 i = 0; i < ids.length; i++) {
-            owners[ids[i]] = to;
-        }
-    }
-
-    function _burn(
-        address account,
-        uint256 id,
-        uint256 amount
-    ) internal override(ERC1155) {
-        super._burn(account, id, amount);
-        owners[id] = address(0);
-    }
-
-    function _burnBatch(
-        address account,
-        uint256[] memory ids,
-        uint256[] memory amounts
-    ) internal override(ERC1155) {
-        super._burnBatch(account, ids, amounts);
-        for (uint256 i = 0; i < ids.length; i++) {
-            owners[ids[i]] = address(0);
-        }
     }
 
     function _beforeTokenTransfer(
@@ -233,5 +221,16 @@ contract MyERC1155 is
         bytes memory data
     ) internal override(ERC1155, ERC1155Supply) whenNotPaused {
         super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(AccessControlEnumerable, ERC1155)
+        returns (bool)
+    {
+        return
+            super.supportsInterface(interfaceId) ||
+            interfaceId == type(IERC2981).interfaceId;
     }
 }

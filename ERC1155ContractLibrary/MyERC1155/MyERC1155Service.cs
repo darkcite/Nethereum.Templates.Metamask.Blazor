@@ -174,11 +174,10 @@ namespace ERC1155ContractLibrary.Contracts.MyERC1155
              return ContractHandler.SendRequestAndWaitForReceiptAsync(mintFunction, cancellationToken);
         }
 
-        public Task<string> MintRequestAsync(string account, BigInteger id, BigInteger amount, byte royalty, byte[] data)
+        public Task<string> MintRequestAsync(string account, BigInteger amount, byte royalty, byte[] data)
         {
             var mintFunction = new MintFunction();
                 mintFunction.Account = account;
-                mintFunction.Id = id;
                 mintFunction.Amount = amount;
                 mintFunction.Royalty = royalty;
                 mintFunction.Data = data;
@@ -186,11 +185,10 @@ namespace ERC1155ContractLibrary.Contracts.MyERC1155
              return ContractHandler.SendRequestAsync(mintFunction);
         }
 
-        public Task<TransactionReceipt> MintRequestAndWaitForReceiptAsync(string account, BigInteger id, BigInteger amount, byte royalty, byte[] data, CancellationTokenSource cancellationToken = null)
+        public Task<TransactionReceipt> MintRequestAndWaitForReceiptAsync(string account, BigInteger amount, byte royalty, byte[] data, CancellationTokenSource cancellationToken = null)
         {
             var mintFunction = new MintFunction();
                 mintFunction.Account = account;
-                mintFunction.Id = id;
                 mintFunction.Amount = amount;
                 mintFunction.Royalty = royalty;
                 mintFunction.Data = data;
@@ -208,39 +206,26 @@ namespace ERC1155ContractLibrary.Contracts.MyERC1155
              return ContractHandler.SendRequestAndWaitForReceiptAsync(mintBatchFunction, cancellationToken);
         }
 
-        public Task<string> MintBatchRequestAsync(string to, List<BigInteger> ids, List<BigInteger> amounts, byte[] data)
+        public Task<string> MintBatchRequestAsync(string to, List<BigInteger> amounts, byte[] data)
         {
             var mintBatchFunction = new MintBatchFunction();
                 mintBatchFunction.To = to;
-                mintBatchFunction.Ids = ids;
                 mintBatchFunction.Amounts = amounts;
                 mintBatchFunction.Data = data;
             
              return ContractHandler.SendRequestAsync(mintBatchFunction);
         }
 
-        public Task<TransactionReceipt> MintBatchRequestAndWaitForReceiptAsync(string to, List<BigInteger> ids, List<BigInteger> amounts, byte[] data, CancellationTokenSource cancellationToken = null)
+        public Task<TransactionReceipt> MintBatchRequestAndWaitForReceiptAsync(string to, List<BigInteger> amounts, byte[] data, CancellationTokenSource cancellationToken = null)
         {
             var mintBatchFunction = new MintBatchFunction();
                 mintBatchFunction.To = to;
-                mintBatchFunction.Ids = ids;
                 mintBatchFunction.Amounts = amounts;
                 mintBatchFunction.Data = data;
             
              return ContractHandler.SendRequestAndWaitForReceiptAsync(mintBatchFunction, cancellationToken);
         }
-
-        public Task<string> OwnerQueryAsync(OwnerFunction ownerFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<OwnerFunction, string>(ownerFunction, blockParameter);
-        }
-
         
-        public Task<string> OwnerQueryAsync(BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<OwnerFunction, string>(null, blockParameter);
-        }
-
         public Task<string> PauseRequestAsync(PauseFunction pauseFunction)
         {
              return ContractHandler.SendRequestAsync(pauseFunction);
@@ -270,26 +255,6 @@ namespace ERC1155ContractLibrary.Contracts.MyERC1155
         public Task<bool> PausedQueryAsync(BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryAsync<PausedFunction, bool>(null, blockParameter);
-        }
-
-        public Task<string> RenounceOwnershipRequestAsync(RenounceOwnershipFunction renounceOwnershipFunction)
-        {
-             return ContractHandler.SendRequestAsync(renounceOwnershipFunction);
-        }
-
-        public Task<string> RenounceOwnershipRequestAsync()
-        {
-             return ContractHandler.SendRequestAsync<RenounceOwnershipFunction>();
-        }
-
-        public Task<TransactionReceipt> RenounceOwnershipRequestAndWaitForReceiptAsync(RenounceOwnershipFunction renounceOwnershipFunction, CancellationTokenSource cancellationToken = null)
-        {
-             return ContractHandler.SendRequestAndWaitForReceiptAsync(renounceOwnershipFunction, cancellationToken);
-        }
-
-        public Task<TransactionReceipt> RenounceOwnershipRequestAndWaitForReceiptAsync(CancellationTokenSource cancellationToken = null)
-        {
-             return ContractHandler.SendRequestAndWaitForReceiptAsync<RenounceOwnershipFunction>(null, cancellationToken);
         }
 
         public Task<string> SafeBatchTransferFromRequestAsync(SafeBatchTransferFromFunction safeBatchTransferFromFunction)
@@ -470,32 +435,6 @@ namespace ERC1155ContractLibrary.Contracts.MyERC1155
             return ContractHandler.QueryAsync<TotalSupplyFunction, BigInteger>(totalSupplyFunction, blockParameter);
         }
 
-        public Task<string> TransferOwnershipRequestAsync(TransferOwnershipFunction transferOwnershipFunction)
-        {
-             return ContractHandler.SendRequestAsync(transferOwnershipFunction);
-        }
-
-        public Task<TransactionReceipt> TransferOwnershipRequestAndWaitForReceiptAsync(TransferOwnershipFunction transferOwnershipFunction, CancellationTokenSource cancellationToken = null)
-        {
-             return ContractHandler.SendRequestAndWaitForReceiptAsync(transferOwnershipFunction, cancellationToken);
-        }
-
-        public Task<string> TransferOwnershipRequestAsync(string newOwner)
-        {
-            var transferOwnershipFunction = new TransferOwnershipFunction();
-                transferOwnershipFunction.NewOwner = newOwner;
-            
-             return ContractHandler.SendRequestAsync(transferOwnershipFunction);
-        }
-
-        public Task<TransactionReceipt> TransferOwnershipRequestAndWaitForReceiptAsync(string newOwner, CancellationTokenSource cancellationToken = null)
-        {
-            var transferOwnershipFunction = new TransferOwnershipFunction();
-                transferOwnershipFunction.NewOwner = newOwner;
-            
-             return ContractHandler.SendRequestAndWaitForReceiptAsync(transferOwnershipFunction, cancellationToken);
-        }
-
         public Task<string> UnpauseRequestAsync(UnpauseFunction unpauseFunction)
         {
              return ContractHandler.SendRequestAsync(unpauseFunction);
@@ -575,13 +514,6 @@ namespace ERC1155ContractLibrary.Contracts.MyERC1155
             };
 
             return await ContractHandler.SendRequestAsync(buyTokenFunction);
-        }
-
-
-        public async Task<string> GetOwnerOfTokenAsync(BigInteger tokenId)
-        {
-            var getOwnerFunction = new GetOwnerFunction() { TokenId = tokenId };
-            return await ContractHandler.QueryAsync<GetOwnerFunction, string>(getOwnerFunction);
         }
 
         public async Task<byte> QueryRoyaltiesAsync(BigInteger tokenId)

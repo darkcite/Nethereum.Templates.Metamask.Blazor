@@ -52,5 +52,8 @@
     <ProjectReference Include="..\ERC1155ContractLibrary\ERC1155ContractLibrary.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+    <ProjectReference Include="..\Marketplace.Shared\Marketplace.Shared.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Numerics;
+using Marketplace.Shared;
+
 namespace Marketplace.Wasm.Models
 {
 	public class NFTViewModel
