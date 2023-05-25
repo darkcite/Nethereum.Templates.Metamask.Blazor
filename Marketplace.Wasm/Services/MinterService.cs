@@ -44,7 +44,7 @@ namespace Marketplace.Wasm.Services
 
             var BuyMinterRoleFunctionMessage = new BuyMinterRoleFunction
             {
-                AmountToSend = BigInteger.Parse("21000000000000000000")
+                AmountToSend = BigInteger.Parse("20000000000000000000")
             };
 
             var BuyMinterRoleData = BuyMinterRoleFunction.GetData(BuyMinterRoleFunctionMessage);

@@ -12,6 +12,9 @@ using Newtonsoft.Json.Linq;
 using Nethereum.Model;
 using Nethereum.RPC.NonceServices;
 using Marketplace.Shared;
+using Nethereum.Contracts.ContractHandlers;
+using Nethereum.Web3;
+using Nethereum.BlockchainProcessing.BlockStorage.Entities;
 
 namespace ERC1155ContractLibraryN7.Testing;
 
@@ -23,15 +26,15 @@ public class MyErc1155Test
     private readonly string _contractId;
     private readonly string _auctionContractId;
     private readonly HexBigInteger _deploymentBlockNumber;
-    private readonly string infU = "";
-    private readonly string infP = "";
+    private readonly string infU = "2OyEUF7r4netkvcqOQNPkAkyVHQ";
+    private readonly string infP = "d98294208b5d4302c6fd510a4d4df4c1";
 
     /// <summary>
     /// Test properties
     /// </summary>
     private readonly byte royalty = 10;
     private readonly BigInteger howManyTokensOfThisTypeToMint = 1;
-    private readonly string addressToRegisterOwnership = "0x6F637f5f49a5A10684a9eeC1Ea5ffef025413509";
+    private readonly string addressToRegisterOwnership = "0x33DB70795c69193B1B2dA43C36E719796C47D0CF";
     //private readonly BigInteger userDefinedTokenId = 666;
 
     public MyErc1155Test(EthereumClientIntegrationFixture ethereumClientIntegrationFixture)
@@ -89,7 +92,7 @@ public class MyErc1155Test
 
             var tokenMetadata = new TokenMetadata()
             {
-                Name = Path.GetFileNameWithoutExtension(file),
+                Name = "Web3Gems",
                 Image = "ipfs://" + imageIpfs.Hash,
                 Description = $"Gem {i} - {Path.GetFileNameWithoutExtension(file)}", // Using index and file name as Description
                 ExternalUrl = "",
@@ -110,6 +113,45 @@ public class MyErc1155Test
             var addressOfToken = await erc1155Service.UriQueryAsync(justMintedTokenId);
             Assert.Equal("ipfs://" + metadataIpfs.Hash, addressOfToken);
         }
+    }
+
+    [Fact]
+    public async void TestByMinterRole()
+    {
+        var web3 = _ethereumClientIntegrationFixture.GetWeb3(); //if you want to use your local node (ie geth, uncomment this, see appsettings.test.json for further info)
+        web3.Eth.TransactionManager.UseLegacyAsDefault = true;
+        var erc1155Service = new MyERC1155Service(web3, _contractId);
+
+        var BuyMinterRoleFunctionMessage = new BuyMinterRoleFunction
+        {
+            AmountToSend = Web3.Convert.ToWei(20)
+        };
+        TransactionReceipt buyMinterRoleFunctionTxnReceipt = null;
+        //var BuyMinterRoleData = BuyMinterRoleFunction.GetData(BuyMinterRoleFunctionMessage);
+        try
+        {
+            buyMinterRoleFunctionTxnReceipt = await erc1155Service.ContractHandler.SendRequestAndWaitForReceiptAsync<BuyMinterRoleFunction>();
+        }
+        catch
+        { }
+
+        var logs = erc1155Service.GetTokenMintedEvent().DecodeAllEventsForEvent(await web3.Eth.Filters.GetLogs.SendRequestAsync(erc1155Service.ContractHandler.GetEvent<LogUintEventDTO>().CreateFilterInput(new BlockParameter(_deploymentBlockNumber),
+            BlockParameter.CreateLatest())));
+
+
+
+        //=================
+        var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(buyMinterRoleFunctionTxnReceipt.TransactionHash);
+
+        // Then, you create a filter input:
+        var filterInput = web3.Eth.GetEvent<LogUintEventDTO>().CreateFilterInput(receipt.BlockHash);
+
+        // Finally, you get all changes
+
+        var changes = await web3.Eth.GetEvent<LogUintEventDTO>().GetAllChangesAsync(filterInput);
+
+
+        var tokenData = await erc1155Service.GetTokenDataAsync(0);
     }
 
     [Fact]
@@ -195,7 +237,7 @@ public class MyErc1155Test
 
         var tokenMetadata = new TokenMetadata()
         {
-            Name = "",
+            Name = "Web3Gems",
             Image = "ipfs://" + imageIpfs.Hash,
             Description = "sraka",
             ExternalUrl = "",

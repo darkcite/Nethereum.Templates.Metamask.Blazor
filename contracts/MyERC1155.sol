@@ -18,7 +18,6 @@ contract MyERC1155 is
     ReentrancyGuard
 {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    uint256 public constant MINTER_PRICE = 20 ether;
     uint256 private _currentTokenId = 0;
 
     mapping(uint256 => string) private _tokenURIs;
@@ -32,8 +31,6 @@ contract MyERC1155 is
     }
 
     mapping(uint256 => TokenData) public tokenData;
-
-    // New mapping to track the original minter of the tokens
     mapping(uint256 => address) public originalMinters;
 
     event TokenMinted(
@@ -55,11 +52,10 @@ contract MyERC1155 is
     );
 
     constructor() ERC1155("") {
-        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-        _setupRole(MINTER_ROLE, _msgSender());
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(MINTER_ROLE, msg.sender);
     }
 
-    // New withdraw function
     function withdraw() public onlyRole(DEFAULT_ADMIN_ROLE) {
         payable(_msgSender()).transfer(address(this).balance);
     }
@@ -87,18 +83,6 @@ contract MyERC1155 is
         _unpause();
     }
 
-    function buyMinterRole() external payable {
-        require(msg.value >= MINTER_PRICE, "Insufficient Ether value sent");
-        if (msg.value > MINTER_PRICE) {
-            uint256 excessAmount = msg.value - MINTER_PRICE;
-            (bool refundSucceeded, ) = payable(msg.sender).call{
-                value: excessAmount
-            }("");
-            require(refundSucceeded, "Refund of excess amount failed");
-        }
-        grantRole(MINTER_ROLE, msg.sender);
-    }
-
     function mint(
         address account,
         uint256 amount,
@@ -113,7 +97,7 @@ contract MyERC1155 is
         royalties[_currentTokenId] = royalty;
         emit TokenMinted(account, _currentTokenId, amount);
         _currentTokenId++;
-        return _currentTokenId - 1; // Returns the tokenId of the newly minted token
+        return _currentTokenId - 1;
     }
 
     function mintBatch(
@@ -140,7 +124,7 @@ contract MyERC1155 is
             _currentTokenId++;
         }
         _mintBatch(to, ids, amounts, data);
-        return ids; // Returns the tokenIds of the newly minted tokens
+        return ids;
     }
 
     function updateTokenForSale(
