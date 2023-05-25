@@ -17,13 +17,15 @@
                     <small id="selectedAccountHelp" class="form-text text-muted">The selected account is bound to the host (ie Metamask) on change</small>
                 </div>
             </div>
-            <div class="row mb-3">
-                <div class="col-sm-12">
-                    <h4>Become a seller on our marketplace</h4>
-                    <p>Price: 20 ETH</p>
-                    <button class="btn btn-primary" @onclick="BecomeSeller">Become</button>
+            @if (!isSeller)
+            {
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <h4>Become a seller on our marketplace</h4>
+                        <button class="btn btn-primary" @onclick="BecomeSeller">Become</button>
+                    </div>
                 </div>
-            </div>
+            }
         </div>
     </Authorized>
     <NotAuthorized>
@@ -37,6 +39,9 @@
 @code {
     bool EthereumAvailable { get; set; }
     string SelectedAccount { get; set; }
+
+    private bool isSeller;
+
     IEthereumHostProvider _ethereumHostProvider;
 
     protected override void OnInitialized()
@@ -58,6 +63,7 @@
         {
             SelectedAccount = await _ethereumHostProvider.GetProviderSelectedAccountAsync();
         }
+        isSeller = await MinterService.HasMinterRoleAsync(SelectedAccount);
     }
 
     private async Task HostProvider_SelectedAccountChanged(string account)
@@ -68,6 +74,6 @@
 
     private async Task BecomeSeller()
     {
-        await MinterService.BuyMinterRoleAsync();
+        //await MinterService.BuyMinterRoleAsync();
     }
 }

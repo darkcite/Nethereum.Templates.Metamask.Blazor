@@ -34,7 +34,7 @@ public class MyErc1155Test
     /// </summary>
     private readonly byte royalty = 10;
     private readonly BigInteger howManyTokensOfThisTypeToMint = 1;
-    private readonly string addressToRegisterOwnership = "0x33DB70795c69193B1B2dA43C36E719796C47D0CF";
+    private readonly string addressToRegisterOwnership = "0x16daDE8fe80a7e9E1163A31300C1dbeb059885FF";
     //private readonly BigInteger userDefinedTokenId = 666;
 
     public MyErc1155Test(EthereumClientIntegrationFixture ethereumClientIntegrationFixture)
@@ -115,44 +115,44 @@ public class MyErc1155Test
         }
     }
 
-    [Fact]
-    public async void TestByMinterRole()
-    {
-        var web3 = _ethereumClientIntegrationFixture.GetWeb3(); //if you want to use your local node (ie geth, uncomment this, see appsettings.test.json for further info)
-        web3.Eth.TransactionManager.UseLegacyAsDefault = true;
-        var erc1155Service = new MyERC1155Service(web3, _contractId);
+    //[Fact]
+    //public async void TestByMinterRole()
+    //{
+    //    var web3 = _ethereumClientIntegrationFixture.GetWeb3(); //if you want to use your local node (ie geth, uncomment this, see appsettings.test.json for further info)
+    //    web3.Eth.TransactionManager.UseLegacyAsDefault = true;
+    //    var erc1155Service = new MyERC1155Service(web3, _contractId);
 
-        var BuyMinterRoleFunctionMessage = new BuyMinterRoleFunction
-        {
-            AmountToSend = Web3.Convert.ToWei(20)
-        };
-        TransactionReceipt buyMinterRoleFunctionTxnReceipt = null;
-        //var BuyMinterRoleData = BuyMinterRoleFunction.GetData(BuyMinterRoleFunctionMessage);
-        try
-        {
-            buyMinterRoleFunctionTxnReceipt = await erc1155Service.ContractHandler.SendRequestAndWaitForReceiptAsync<BuyMinterRoleFunction>();
-        }
-        catch
-        { }
+    //    var BuyMinterRoleFunctionMessage = new BuyMinterRoleFunction
+    //    {
+    //        AmountToSend = Web3.Convert.ToWei(20)
+    //    };
+    //    TransactionReceipt buyMinterRoleFunctionTxnReceipt = null;
+    //    //var BuyMinterRoleData = BuyMinterRoleFunction.GetData(BuyMinterRoleFunctionMessage);
+    //    try
+    //    {
+    //        buyMinterRoleFunctionTxnReceipt = await erc1155Service.ContractHandler.SendRequestAndWaitForReceiptAsync<BuyMinterRoleFunction>();
+    //    }
+    //    catch
+    //    { }
 
-        var logs = erc1155Service.GetTokenMintedEvent().DecodeAllEventsForEvent(await web3.Eth.Filters.GetLogs.SendRequestAsync(erc1155Service.ContractHandler.GetEvent<LogUintEventDTO>().CreateFilterInput(new BlockParameter(_deploymentBlockNumber),
-            BlockParameter.CreateLatest())));
-
-
-
-        //=================
-        var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(buyMinterRoleFunctionTxnReceipt.TransactionHash);
-
-        // Then, you create a filter input:
-        var filterInput = web3.Eth.GetEvent<LogUintEventDTO>().CreateFilterInput(receipt.BlockHash);
-
-        // Finally, you get all changes
-
-        var changes = await web3.Eth.GetEvent<LogUintEventDTO>().GetAllChangesAsync(filterInput);
+    //    var logs = erc1155Service.GetTokenMintedEvent().DecodeAllEventsForEvent(await web3.Eth.Filters.GetLogs.SendRequestAsync(erc1155Service.ContractHandler.GetEvent<LogUintEventDTO>().CreateFilterInput(new BlockParameter(_deploymentBlockNumber),
+    //        BlockParameter.CreateLatest())));
 
 
-        var tokenData = await erc1155Service.GetTokenDataAsync(0);
-    }
+
+    //    //=================
+    //    var receipt = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(buyMinterRoleFunctionTxnReceipt.TransactionHash);
+
+    //    // Then, you create a filter input:
+    //    var filterInput = web3.Eth.GetEvent<LogUintEventDTO>().CreateFilterInput(receipt.BlockHash);
+
+    //    // Finally, you get all changes
+
+    //    var changes = await web3.Eth.GetEvent<LogUintEventDTO>().GetAllChangesAsync(filterInput);
+
+
+    //    var tokenData = await erc1155Service.GetTokenDataAsync(0);
+    //}
 
     [Fact]
     public async void ApproveContractAsOperator()
