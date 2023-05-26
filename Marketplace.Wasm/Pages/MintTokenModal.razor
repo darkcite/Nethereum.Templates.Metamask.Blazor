@@ -1,0 +1,157 @@
+﻿@using Marketplace.Shared;
+@using System.Numerics;
+@inject IJSRuntime JsRuntime
+@inject Services.NFTService NftService
+@inject SelectedEthereumHostProviderService SelectedHostProviderService
+<!-- Modal definition -->
+<div class="modal fade" id="mintModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Mint Token</h5>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="form-control mb-2" @bind="TokenMetadata.Name" placeholder="Name" />
+                <input type="text" class="form-control mb-2" @bind="TokenMetadata.Description" placeholder="Description" />
+                <InputFile class="form-control mb-2" OnChange="@((InputFileChangeEventArgs e) => UploadImage(e))" />
+                <input type="number" class="form-control mb-2" @bind="howManyTokensOfThisTypeToMint" placeholder="How many tokens to mint (Fractionalize)" />
+                <input type="number" step="0.01" class="form-control mb-2" @bind="royalty" placeholder="Royalty (in percentage)" />
+                <input type="text" class="form-control mb-2" @bind="TokenMetadata.ExternalUrl" placeholder="External URL" />
+                <label for="backgroundColor">Background Color</label>
+                <input id="backgroundColor" type="color" class="form-control mb-2" @bind="TokenMetadata.BackgroundColor" />
+                @if (TokenMetadata.Traits != null)
+                {
+                    @for (var i = 0; i < TokenMetadata.Traits.Count; i++)
+                    {
+                        var index = i; // we need to capture variable in a local scope because of Blazor's rendering behaviour
+                        <div class="row">
+                            <div class="col-5">
+                                <EditForm Model="@TokenMetadata.Traits[index]" @key="@TokenMetadata.Traits[index]">
+                                    <div class="form-group">
+                                        <InputText id="traitType" class="form-control" @bind-Value="TokenMetadata.Traits[index].TraitType" placeholder="Trait Type" />
+                                    </div>
+                                </EditForm>
+                            </div>
+                            <div class="col-5">
+                                <EditForm Model="@TokenMetadata.Traits[index]" @key="@TokenMetadata.Traits[index]">
+                                    <div class="form-group">
+                                        <InputText id="traitValue" class="form-control" @bind-Value="TokenMetadata.Traits[index].Value" placeholder="Trait Value" />
+                                    </div>
+                                </EditForm>
+                            </div>
+                            <div class="col-2">
+                                <button class="btn btn-danger" @onclick="(() => RemoveTrait(index))">X</button>
+                            </div>
+                        </div>
+                    }
+                }
+                <button type="button" class="btn btn-primary" @onclick="AddTrait">Add Trait</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="Close">Close</button>
+                <button type="button" class="btn btn-primary" @onclick="SubmitAsync">Mint Token</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; }
+
+    [Parameter]
+    public EventCallback<TokenMetadata> OnMint { get; set; }
+
+    IEthereumHostProvider _ethereumHostProvider;
+    string SelectedAccount { get; set; }
+
+    public TokenMetadata TokenMetadata { get; set; } = new TokenMetadata { BackgroundColor = "#FFFFFF" };
+
+    public int? howManyTokensOfThisTypeToMint { get; set; }
+    public byte? royalty { get; set; }
+
+    protected override void OnInitialized()
+    {
+        //metamask is selected
+        _ethereumHostProvider = SelectedHostProviderService.SelectedHost;
+        _ethereumHostProvider.SelectedAccountChanged += HostProvider_SelectedAccountChanged;
+    }
+
+    public void Dispose()
+    {
+        _ethereumHostProvider.SelectedAccountChanged -= HostProvider_SelectedAccountChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        {
+            SelectedAccount = await _ethereumHostProvider.GetProviderSelectedAccountAsync();
+        }
+    }
+
+    private async Task HostProvider_SelectedAccountChanged(string account)
+    {
+        SelectedAccount = account;
+        this.StateHasChanged();
+    }
+
+    public async Task Show()
+    {
+        await JSRuntime.InvokeVoidAsync("openModal", "mintModal");
+    }
+
+    public async Task Close()
+    {
+        await JSRuntime.InvokeVoidAsync("closeModal", "mintModal");
+    }
+
+    public async Task SubmitAsync()
+    {
+        SelectedAccount = await _ethereumHostProvider.GetProviderSelectedAccountAsync();
+
+        var mintResult = await NftService.MintTokenAndUploadMetadata(SelectedAccount, new BigInteger(howManyTokensOfThisTypeToMint ?? 0), royalty ?? 10, TokenMetadata);
+
+        await OnMint.InvokeAsync(TokenMetadata);
+        Close();
+    }
+
+    private void AddTrait()
+    {
+        if (TokenMetadata.Traits == null)
+        {
+            TokenMetadata.Traits = new List<Trait>();
+        }
+
+        TokenMetadata.Traits.Add(new Trait());
+        StateHasChanged();
+    }
+
+    private void RemoveTrait(int index)
+    {
+        if (TokenMetadata.Traits != null && TokenMetadata.Traits.Count > index)
+        {
+            TokenMetadata.Traits.RemoveAt(index);
+            StateHasChanged();
+        }
+    }
+
+
+    private async Task UploadImage(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001");
+
+            // Upload the file to IPFS
+            var imageIpfs = await nftIpfsService.AddFileToIpfsAsync(file);
+
+            // Store the resulting IPFS hash in the `TokenMetadata.Image` field
+            TokenMetadata.Image = imageIpfs.Hash;
+        }
+    }
+}
+
+
+
+

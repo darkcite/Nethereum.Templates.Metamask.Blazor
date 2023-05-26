@@ -15,6 +15,8 @@ using Marketplace.Shared;
 using Nethereum.Contracts.ContractHandlers;
 using Nethereum.Web3;
 using Nethereum.BlockchainProcessing.BlockStorage.Entities;
+using ERC1155ContractLibrary.Contracts.MinterProfile;
+using ERC1155ContractLibrary.Contracts.MinterProfile.ContractDefinition;
 
 namespace ERC1155ContractLibraryN7.Testing;
 
@@ -26,8 +28,6 @@ public class MyErc1155Test
     private readonly string _contractId;
     private readonly string _auctionContractId;
     private readonly HexBigInteger _deploymentBlockNumber;
-    private readonly string infU = "2OyEUF7r4netkvcqOQNPkAkyVHQ";
-    private readonly string infP = "d98294208b5d4302c6fd510a4d4df4c1";
 
     /// <summary>
     /// Test properties
@@ -62,11 +62,14 @@ public class MyErc1155Test
         var myAuctionDeployment = new MyAuctionDeployment { TokenAddress = deploymentReceipt.ContractAddress };
         var auctionDeploymentReceipt = await MyAuctionService.DeployContractAndWaitForReceiptAsync(web3, myAuctionDeployment);
 
+        var minterProfileDeployment = new MinterProfileDeployment();
+        var MinterProfileDeploymentReceipt = await MinterProfileService.DeployContractAndWaitForReceiptAsync(web3, minterProfileDeployment);
 
         string appsettingsTestJsonPath = "../../../appsettings.test.json";
         var appsettingstest = JObject.Parse(File.ReadAllText(appsettingsTestJsonPath));
         appsettingstest["ContractAddress"] = deploymentReceipt.ContractAddress;
         appsettingstest["AuctionContractAddress"] = auctionDeploymentReceipt.ContractAddress;
+        appsettingstest["MinterProfileContractAddress"] = MinterProfileDeploymentReceipt.ContractAddress;
         appsettingstest["DeploymentBlockNumber"] = deploymentReceipt.BlockNumber.Value.ToString();
         File.WriteAllText(appsettingsTestJsonPath, appsettingstest.ToString());
 
@@ -74,12 +77,13 @@ public class MyErc1155Test
         var appsettings = JObject.Parse(File.ReadAllText(appsettingsJsonPath));
         ((JObject)appsettings["Ethereum"])["ContractAddress"] = deploymentReceipt.ContractAddress;
         ((JObject)appsettings["Ethereum"])["AuctionContractAddress"] = auctionDeploymentReceipt.ContractAddress;
+        ((JObject)appsettings["Ethereum"])["MinterProfileContractAddress"] = MinterProfileDeploymentReceipt.ContractAddress;
         ((JObject)appsettings["Ethereum"])["DeploymentBlockNumber"] = deploymentReceipt.BlockNumber.Value.ToString();
         File.WriteAllText(appsettingsJsonPath, appsettings.ToString());
 
         var erc1155Service = new MyERC1155Service(web3, deploymentReceipt.ContractAddress);
         var auctionService = new MyAuctionService(web3, auctionDeploymentReceipt.ContractAddress);
-        var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: infU, password: infP);
+        var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001");
 
         string[] files = Directory.GetFiles("ShopImages/");
 
@@ -87,7 +91,7 @@ public class MyErc1155Test
         {
             var file = files[i];
             var imageIpfs = await nftIpfsService.AddFileToIpfsAsync(file);
-
+            
             //var //userDefinedTokenIid = i+1;
 
             var tokenMetadata = new TokenMetadata()
@@ -97,7 +101,7 @@ public class MyErc1155Test
                 Description = $"Gem {i} - {Path.GetFileNameWithoutExtension(file)}", // Using index and file name as Description
                 ExternalUrl = "",
                 BackgroundColor = "#FFFFFF",
-                Traits = new Trait[] { }
+                Traits = new Trait[] { }.ToList()
             };
                       
             var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, howManyTokensOfThisTypeToMint, royalty, new byte[] { });
@@ -230,7 +234,7 @@ public class MyErc1155Test
         var erc1155Service = new MyERC1155Service(web3, _contractId);
 
         //uploading to ipfs our documents
-        var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001", userName: infU, password: infP);
+        var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001");
         var imageIpfs = await nftIpfsService.AddFileToIpfsAsync("ShopImages/14 Ct.gif");
 
         //adding all our document ipfs links to the metadata and the description
@@ -242,7 +246,7 @@ public class MyErc1155Test
             Description = "sraka",
             ExternalUrl = "",
             BackgroundColor = "#FFFFFF",
-            Traits = new Trait[] { }
+            Traits = new Trait[] { }.ToList()
         };
 
         var mintReceipt = await erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership, howManyTokensOfThisTypeToMint, royalty, new byte[] { });

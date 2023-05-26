@@ -4,8 +4,9 @@
 @using Marketplace.Wasm.Models
 @using System.Numerics;
 @using Nethereum.Web3
+@using Marketplace.Shared;
 @inject IJSRuntime JsRuntime
-@inject Services.MinterService MinterService
+@inject Services.NFTService NftService
 
 <AuthorizeView Roles="EthereumConnected">
     <Authorized Context="authContext">
@@ -26,6 +27,33 @@
                     </div>
                 </div>
             }
+            else
+            {
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <h4>Your Collection</h4>
+                        <div>
+                            <label>Collection Name:</label>
+                            <input @bind="collectionName" />
+                        </div>
+                        <div>
+                            <label>Logo:</label>
+                            <InputFile OnChange="@((InputFileChangeEventArgs args) => UploadLogo(args))" />
+                        </div>
+                        <div>
+                            <label>Banner:</label>
+                            <InputFile OnChange="@((InputFileChangeEventArgs args) => UploadBanner(args))" />
+                        </div>
+                        <button class="btn btn-primary" @onclick="UpdateCollection">Update Collection</button>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-12">
+                        <button class="btn btn-primary" @onclick="OpenMintTokenModal">Mint a Token</button>
+                    </div>
+                </div>
+            }
         </div>
     </Authorized>
     <NotAuthorized>
@@ -35,10 +63,16 @@
     </NotAuthorized>
 </AuthorizeView>
 
+<MintTokenModal @ref="mintTokenModal" />
 
 @code {
     bool EthereumAvailable { get; set; }
     string SelectedAccount { get; set; }
+    string collectionName { get; set; }
+    string logoFile { get; set; }
+    string bannerFile { get; set; }
+
+    MintTokenModal mintTokenModal;
 
     private bool isSeller;
 
@@ -63,7 +97,7 @@
         {
             SelectedAccount = await _ethereumHostProvider.GetProviderSelectedAccountAsync();
         }
-        isSeller = await MinterService.HasMinterRoleAsync(SelectedAccount);
+        isSeller = await NftService.HasMinterRoleAsync(SelectedAccount);
     }
 
     private async Task HostProvider_SelectedAccountChanged(string account)
@@ -75,5 +109,38 @@
     private async Task BecomeSeller()
     {
         //await MinterService.BuyMinterRoleAsync();
+    }
+
+    private async Task UpdateCollection()
+    {
+        // Update collection details here...
+    }
+
+    private async Task UploadLogo(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            // Your code to handle the file upload here.
+        }
+    }
+
+    private async Task UploadBanner(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            // Your code to handle the file upload here.
+        }
+    }
+
+    private async Task OpenMintTokenModal()
+    {
+        mintTokenModal.Show();
+    }
+
+    private async Task HandleMintToken(TokenMetadata tokenMetadata)
+    {
+        // Code to mint token using the provided metadata...
     }
 }

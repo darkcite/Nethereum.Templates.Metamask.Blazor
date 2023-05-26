@@ -12,6 +12,10 @@ using Nethereum.Hex.HexTypes;
 using System.Numerics;
 using Nethereum.Web3;
 using Marketplace.Shared;
+using Nethereum.Util;
+using System.Text;
+using System.Linq;
+using Nethereum.Contracts.Standards.ERC1155;
 
 namespace Marketplace.Wasm.Services
 {
@@ -55,7 +59,7 @@ namespace Marketplace.Wasm.Services
                 if (tokenData != null && metadata != null && filter(tokenData) && (!checkOwnership || await IsTokenOwnedByAccount(account, log.Event.TokenId)))
                 {
                     NFTs.Add(new NFTViewModel
-                    {                        
+                    {
                         TokenId = log.Event.TokenId,
                         Price = tokenData.Price,
                         ForSale = tokenData.ForSale,
@@ -207,6 +211,47 @@ namespace Marketplace.Wasm.Services
             }
             return NFTs;
         }
+
+        public async Task<bool> HasMinterRoleAsync(string account)
+        {
+            var hasRoleFunction = new HasRoleFunction();
+            hasRoleFunction.Role = GetRoleBytes("MINTER_ROLE");
+            hasRoleFunction.Account = account;
+            var hasRoleFunctionReturn = await _erc1155Service.ContractHandler.QueryAsync<HasRoleFunction, bool>(hasRoleFunction);
+
+            return hasRoleFunctionReturn;
+        }
+
+        public byte[] GetRoleBytes(string role)
+        {
+            var sha3Keccack = new Sha3Keccack();
+            return sha3Keccack.CalculateHash(Encoding.UTF8.GetBytes(role));
+        }
+
+        public async Task<BigInteger> MintTokenAndUploadMetadata(
+            string addressToRegisterOwnership,
+            BigInteger howManyTokensOfThisTypeToMint,
+            byte royalty,
+            TokenMetadata tokenMetadata)
+        {
+            var mintReceipt = await _erc1155Service.MintRequestAndWaitForReceiptAsync(addressToRegisterOwnership,
+                                                                                    howManyTokensOfThisTypeToMint,
+                                                                                    royalty,
+                                                                                    new byte[] { });
+            var justMintedTokenId = _erc1155Service.GetTokenMintedEvent()
+                                                  .DecodeAllEventsForEvent(mintReceipt.Logs)
+                                                  .FirstOrDefault()
+                                                  .Event
+                                                  .TokenId;
+            
+            //Adding the metadata to ipfs
+            var nftIpfsService = new NFTIpfsService("https://ipfs.infura.io:5001");
+            var metadataIpfs = await nftIpfsService.AddNftsMetadataToIpfsAsync(tokenMetadata,
+                                                                               justMintedTokenId + ".json");
+
+            var tokenUriReceipt = await _erc1155Service.SetTokenUriRequestAndWaitForReceiptAsync(justMintedTokenId, "ipfs://" + metadataIpfs.Hash);
+
+            return justMintedTokenId;
+        }
     }
 }
-

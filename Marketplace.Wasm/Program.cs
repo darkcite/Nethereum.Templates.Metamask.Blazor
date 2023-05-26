@@ -39,7 +39,7 @@ namespace Marketplace.Wasm
             builder.Services.AddSingleton<EthereumClientService>();
 
             builder.Services.AddScoped<NFTService>();
-            builder.Services.AddScoped<MinterService>();
+            builder.Services.AddScoped<MinterProfileService>();
             
             builder.Services.AddScoped<MetaMaskService>();
 

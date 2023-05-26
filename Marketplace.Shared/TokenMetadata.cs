@@ -8,7 +8,7 @@ namespace Marketplace.Shared
         public string Image { get; set; }
         public string ExternalUrl { get; set; }
         public string BackgroundColor { get; set; }
-        public Trait[] Traits { get; set; }
+        public List<Trait> Traits { get; set; }
     }
 
     public class Trait
