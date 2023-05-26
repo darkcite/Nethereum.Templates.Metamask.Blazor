@@ -4,33 +4,37 @@
 
 <div class="container py-4">
     <h2 class="py-2 text-center">Items Listed</h2>
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
-        @if (NFTs != null && NFTs.Count > 0)
+    @if (NFTs != null && NFTs.Count > 0)
+    {
+        var groupedNFTs = NFTs.GroupBy(nft => nft.Minter);
+        foreach (var group in groupedNFTs)
         {
-            @foreach (var nft in NFTs)
-            {
-                <div class="col">
-                    <div class="card h-100 shadow rounded">
-                        <div class="square-image">
-                            <img src="@ConvertIpfsToHttp(nft.TokenMetadata.Image)" class="card-img-top rounded" alt="@nft.TokenMetadata.Name" />
-                        </div>
-                        <div class="card-body">
-                            @*<h5 class="card-title text-center">@nft.Name</h5>*@
-                            <p class="card-text">@nft.TokenMetadata.Description</p>
+            <h3 class="text-center">Minter: @group.Key</h3>
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                @foreach (var nft in group)
+                {
+                    <div class="col">
+                        <div class="card h-100 shadow rounded">
+                            <div class="square-image">
+                                <img src="@ConvertIpfsToHttp(nft.TokenMetadata.Image)" class="card-img-top rounded" alt="@nft.TokenMetadata.Name" />
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">@nft.TokenMetadata.Description</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            }
-        }
-        else
-        {
-            <div class="col">
-                <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
-                    <h1 class="py-10 text-3xl">No NFTs listed</h1>
-                </div>
+                }
             </div>
         }
-    </div>
+    }
+    else
+    {
+        <div class="col">
+            <div class="d-flex justify-content-center align-items-center" style="height: 200px;">
+                <h1 class="py-10 text-3xl">No NFTs listed</h1>
+            </div>
+        </div>
+    }
 </div>
 
 

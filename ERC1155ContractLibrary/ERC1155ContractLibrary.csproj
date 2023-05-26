@@ -11,9 +11,13 @@
     <ItemGroup>
       <None Remove="MyAuction\" />
       <None Remove="MyAuction\ContractDefinition\" />
+      <None Remove="MinterProfile\" />
+      <None Remove="MinterProfile\ContractDefinition\" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="MyAuction\" />
       <Folder Include="MyAuction\ContractDefinition\" />
+      <Folder Include="MinterProfile\" />
+      <Folder Include="MinterProfile\ContractDefinition\" />
     </ItemGroup>
 </Project>

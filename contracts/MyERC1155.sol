@@ -36,7 +36,8 @@ contract MyERC1155 is
     event TokenMinted(
         address indexed account,
         uint256 indexed tokenId,
-        uint256 amount
+        uint256 amount,
+        address minter
     );
     event TokenSaleStatusUpdated(
         uint256 indexed tokenId,
@@ -83,6 +84,17 @@ contract MyERC1155 is
         _unpause();
     }
 
+    function getMinters() public view returns (address[] memory) {
+        uint256 mintersCount = getRoleMemberCount(MINTER_ROLE);
+        address[] memory minters = new address[](mintersCount);
+
+        for (uint256 i = 0; i < mintersCount; i++) {
+            minters[i] = getRoleMember(MINTER_ROLE, i);
+        }
+
+        return minters;
+    }
+
     function mint(
         address account,
         uint256 amount,
@@ -95,7 +107,7 @@ contract MyERC1155 is
         tokenData[_currentTokenId] = TokenData(0, 0, false);
         originalMinters[_currentTokenId] = account;
         royalties[_currentTokenId] = royalty;
-        emit TokenMinted(account, _currentTokenId, amount);
+        emit TokenMinted(account, _currentTokenId, amount, msg.sender);
         _currentTokenId++;
         return _currentTokenId - 1;
     }
@@ -121,6 +133,7 @@ contract MyERC1155 is
             tokenData[_currentTokenId] = TokenData(0, 0, false);
             originalMinters[_currentTokenId] = to;
             royalties[_currentTokenId] = royaltiesArray[i];
+            emit TokenMinted(to, _currentTokenId, amounts[i], msg.sender);
             _currentTokenId++;
         }
         _mintBatch(to, ids, amounts, data);
